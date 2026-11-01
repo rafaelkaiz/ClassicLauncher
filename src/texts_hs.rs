@@ -121,7 +121,7 @@ pub const HS: &[(&str, [&str; 2])] = &[
     ("Yes", ["Igen", "Da"]),
     ("No", ["Nem", "Ne"]),
     ("Without a bus", ["Busz nélkül", "Bez autobusa"]),
-    ("Brand", ["Márka", "Marka"]),
+    ("Manufacturer", ["Gyártó", "Proizvođač"]),
     ("Model", ["Modell", "Model"]),
     ("Paint", ["Fényezés", "Farba"]),
     ("Plate", ["Rendszám", "Tablica"]),

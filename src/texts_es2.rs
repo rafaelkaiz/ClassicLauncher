@@ -427,7 +427,7 @@ pub const ES2: &[(&str, &str)] = &[
     ("Turn the 3D view off (it can be turned on in the launcher's settings)", "Desactivar la vista 3D (se puede volver a activar en los ajustes del launcher)"),
     ("Turn off the 3D view", "Desactivar vista 3D"),
     ("Turn on the 3D view", "Activar vista 3D"),
-    ("Brand", "Marca"),
+    ("Manufacturer", "Fabricante"),
     ("No preview of this bus", "Sin vista previa de este autobús"),
     ("Preparing the preview...", "Preparando la vista previa..."),
     ("Outside view", "Exterior"),

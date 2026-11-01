@@ -122,7 +122,7 @@ pub const MORE: &[(&str, [&str; 5])] = &[
     ("Yes", ["Ja", "Tak", "Ano", "Oui", "Sim"]),
     ("No", ["Nein", "Nie", "Ne", "Non", "Não"]),
     ("Without a bus", ["Ohne Bus", "Bez autobusu", "Bez autobusu", "Sans bus", "Sem autocarro"]),
-    ("Brand", ["Marke", "Marka", "Značka", "Marque", "Marca"]),
+    ("Manufacturer", ["Hersteller", "Producent", "Výrobce", "Fabricant", "Fabricante"]),
     ("Model", ["Modell", "Model", "Model", "Modèle", "Modelo"]),
     ("Paint", ["Lackierung", "Malowanie", "Nátěr", "Peinture", "Pintura"]),
     ("Plate", ["Kennzeichen", "Tablica", "SPZ", "Plaque", "Matrícula"]),
