@@ -1,6 +1,6 @@
 //! Option presets for openOMSI's settings: the six quality levels the game's own launcher offers (Low to Ultra, ported from its
 //! `graphics_presets`) and the launcher's own, saved as plain `key=value` files in `%APPDATA%\ClassicLauncher\presets`. Loading a
-//! preset sets the keys it holds and leaves every other setting as it is; a saved file is never overwritten.
+//! preset sets the keys it holds and leaves every other setting as it is; a saved file is replaced only when the user confirms it.
 
 use crate::gamecfg::GameCfg;
 use std::path::PathBuf;
@@ -126,13 +126,27 @@ pub fn apply(cfg: &mut GameCfg, p: &Preset) {
 
 /// Saves the current settings as a new preset. An existing preset of that name is never replaced.
 pub fn save_new(cfg: &GameCfg, name: &str) -> Result<(), String> {
+    write(cfg, name, false)
+}
+
+/// Is there a profile of the user's with that name?
+pub fn exists(name: &str) -> bool {
+    valid_name(name) && dir().join(format!("{}.cfg", name.trim())).exists()
+}
+
+/// Saves the current settings as a profile, replacing a profile of the user's of that name (a quality level is never replaced).
+pub fn save_over(cfg: &GameCfg, name: &str) -> Result<(), String> {
+    write(cfg, name, true)
+}
+
+fn write(cfg: &GameCfg, name: &str, overwrite: bool) -> Result<(), String> {
     let name = name.trim();
     if !valid_name(name) {
         return Err(crate::i18n::tr("That name cannot be used.").to_string());
     }
     std::fs::create_dir_all(dir()).map_err(|e| e.to_string())?;
     let path = dir().join(format!("{name}.cfg"));
-    if path.exists() || builtin().iter().any(|p| p.name.eq_ignore_ascii_case(name)) {
+    if (path.exists() && !overwrite) || builtin().iter().any(|p| p.name.eq_ignore_ascii_case(name)) {
         return Err(crate::i18n::tr("A preset with that name exists already.").to_string());
     }
     let keys: Vec<&str> = GRAPHICS_KEYS.to_vec();

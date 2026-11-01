@@ -122,6 +122,8 @@ pub const HS: &[(&str, [&str; 2])] = &[
     ("No", ["Nem", "Ne"]),
     ("Without a bus", ["Busz nélkül", "Bez autobusa"]),
     ("Manufacturer", ["Gyártó", "Proizvođač"]),
+    ("A profile named {} already exists. Overwrite it?", ["Már létezik {} nevű profil. Felülírod?", "Profil pod imenom {} već postoji. Prepisati ga?"]),
+    ("Overwrite", ["Felülírás", "Prepiši"]),
     ("Model", ["Modell", "Model"]),
     ("Paint", ["Fényezés", "Farba"]),
     ("Plate", ["Rendszám", "Tablica"]),

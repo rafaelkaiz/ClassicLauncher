@@ -123,6 +123,8 @@ pub const MORE: &[(&str, [&str; 5])] = &[
     ("No", ["Nein", "Nie", "Ne", "Non", "Não"]),
     ("Without a bus", ["Ohne Bus", "Bez autobusu", "Bez autobusu", "Sans bus", "Sem autocarro"]),
     ("Manufacturer", ["Hersteller", "Producent", "Výrobce", "Fabricant", "Fabricante"]),
+    ("A profile named {} already exists. Overwrite it?", ["Ein Profil namens {} existiert bereits. Überschreiben?", "Profil o nazwie {} już istnieje. Zastąpić go?", "Profil s názvem {} již existuje. Přepsat jej?", "Un profil nommé {} existe déjà. Le remplacer ?", "Já existe um perfil chamado {}. Substituí-lo?"]),
+    ("Overwrite", ["Überschreiben", "Zastąp", "Přepsat", "Remplacer", "Substituir"]),
     ("Model", ["Modell", "Model", "Model", "Modèle", "Modelo"]),
     ("Paint", ["Lackierung", "Malowanie", "Nátěr", "Peinture", "Pintura"]),
     ("Plate", ["Kennzeichen", "Tablica", "SPZ", "Plaque", "Matrícula"]),

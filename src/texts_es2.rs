@@ -428,6 +428,8 @@ pub const ES2: &[(&str, &str)] = &[
     ("Turn off the 3D view", "Desactivar vista 3D"),
     ("Turn on the 3D view", "Activar vista 3D"),
     ("Manufacturer", "Fabricante"),
+    ("A profile named {} already exists. Overwrite it?", "Ya hay un perfil llamado {}. ¿Quieres sobrescribirlo?"),
+    ("Overwrite", "Sobrescribir"),
     ("No preview of this bus", "Sin vista previa de este autobús"),
     ("Preparing the preview...", "Preparando la vista previa..."),
     ("Outside view", "Exterior"),

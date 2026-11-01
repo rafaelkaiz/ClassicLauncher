@@ -12,6 +12,8 @@ pub struct Extra {
     profiles: Vec<Preset>,
     profile_sel: usize,
     profile_name: String,
+    /// The name of a profile that exists and is waiting for the answer to "overwrite it?".
+    confirm_overwrite: Option<String>,
     radio: Vec<(String, String)>,
     /// Aimed-at frame rate for the optimiser: 0 is the screen's rate.
     target: u32,
@@ -80,6 +82,7 @@ impl Extra {
             profiles: presets::user_presets(),
             profile_sel: 0,
             profile_name: String::new(),
+            confirm_overwrite: None,
             radio: crate::radio::load(),
             target: 0,
             opt: opt_status(),
@@ -270,8 +273,37 @@ pub fn profiles_block(ui: &mut Ui, cfg: &mut GameCfg, x: &mut Extra) -> bool {
     ui.add(egui::TextEdit::singleline(&mut x.profile_name).hint_text(tr("Profile name")).desired_width(f32::INFINITY));
     let name = x.profile_name.trim().to_string();
     let save = egui::Button::new(RichText::new(tr("Save the current graphics settings as a profile")).color(egui::Color32::WHITE)).fill(crate::theme::pal().dark).min_size(egui::vec2(ui.available_width(), 28.0));
+    let mut save_now = false;
+    let mut over = false;
     if ui.add_enabled(!name.is_empty(), save).clicked() {
-        x.message = match presets::save_new(cfg, &name) {
+        if presets::exists(&name) {
+            x.confirm_overwrite = Some(name.clone());
+        } else {
+            save_now = true;
+        }
+    }
+    // a profile of that name is there already: ask before it is replaced
+    if let Some(asked) = x.confirm_overwrite.clone() {
+        if asked != name {
+            x.confirm_overwrite = None;
+        } else {
+            ui.label(RichText::new(trf("A profile named {} already exists. Overwrite it?", &[&asked])).strong());
+            ui.horizontal(|ui| {
+                let w = (ui.available_width() - 8.0) / 2.0;
+                if ui.add(egui::Button::new(tr("Overwrite")).min_size(egui::vec2(w, 26.0))).clicked() {
+                    save_now = true;
+                    over = true;
+                }
+                if ui.add(egui::Button::new(tr("Cancel")).min_size(egui::vec2(w, 26.0))).clicked() {
+                    x.confirm_overwrite = None;
+                }
+            });
+        }
+    }
+    if save_now {
+        x.confirm_overwrite = None;
+        let result = if over { presets::save_over(cfg, &name) } else { presets::save_new(cfg, &name) };
+        x.message = match result {
             Ok(()) => {
                 x.profile_name.clear();
                 x.profiles = presets::user_presets();
