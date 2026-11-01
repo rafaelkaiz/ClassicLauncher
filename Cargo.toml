@@ -1,6 +1,6 @@
 [package]
 name = "classic-launcher"
-version = "1.0.0-beta.1"
+version = "1.0.0-beta.2"
 edition = "2024"
 license = "GPL-3.0-or-later"
 description = "A fast launcher for openOMSI"

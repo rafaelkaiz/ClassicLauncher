@@ -8,7 +8,7 @@ ClassicLauncher is a small, fast start screen for openOMSI in the spirit of OMSI
 the date and time, and start. Everything openOMSI can be set up with is one click away in the same window, and nothing in your
 OMSI 2 installation is changed.
 
-*Beta: version 1.0-beta1. Windows 10/11 (64 bit).* · [Website](https://rafaelkaiz.github.io/ClassicLauncher/) · [Leer en español](README.es.md)
+*Beta: version 1.0-beta2. Windows 10/11 (64 bit).* · [Website](https://rafaelkaiz.github.io/ClassicLauncher/) · [Leer en español](README.es.md)
 
 <p align="center">
 <a href="docs/img/start.png"><img src="docs/img/start.png" alt="Start screen" width="32%"></a>
