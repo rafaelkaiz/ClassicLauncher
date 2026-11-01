@@ -65,6 +65,9 @@ fn shown(cfg: &GameCfg, when: When) -> bool {
         When::HeadTracking => cfg.flag("head_tracking", false),
         When::HeadTrackingTobii => cfg.flag("head_tracking", false) && !text_is(cfg, "head_tracking_source", "auto", "opentrack"),
         When::Triple => cfg.flag("triple_screen", false),
+        When::PlainView => !cfg.flag("triple_screen", false) || cfg.flag("vr", false),
+        When::TripleView => cfg.flag("triple_screen", false) && !cfg.flag("vr", false),
+        When::PassengerConnections => cfg.flag("passenger_connections", false),
         When::Vr => cfg.flag("vr", false),
     }
 }

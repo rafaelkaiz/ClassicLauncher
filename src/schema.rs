@@ -27,6 +27,8 @@ pub enum Fmt {
     /// "Automatic" below 90, degrees above.
     AutoDeg,
     Num2,
+    /// A percentage already (0 .. 100), 0 shown as 0%.
+    Pct100,
     /// A value in seconds shown in milliseconds.
     MsOfSecs,
 }
@@ -51,6 +53,7 @@ impl Fmt {
             Fmt::LockDeg => if v < 45.0 { t("OMSI").to_string() } else { format!("{v:.0}°") },
             Fmt::AutoDeg => if v < 90.0 { t("Automatic").to_string() } else { format!("{v:.0}°") },
             Fmt::Num2 => format!("{v:.2}"),
+            Fmt::Pct100 => format!("{v:.0}%"),
             Fmt::MsOfSecs => format!("{:.0} ms", v * 1000.0),
         }
     }
@@ -75,6 +78,12 @@ pub enum When {
     HeadTracking,
     HeadTrackingTobii,
     Triple,
+    /// A single screen or a headset: the ordinary field of view.
+    PlainView,
+    /// Three screens without a headset: the field of view of the triple screen.
+    TripleView,
+    /// "Passenger connections between lines" is on.
+    PassengerConnections,
     Vr,
 }
 
@@ -322,7 +331,8 @@ fn camera() -> Tab {
                     sli("seat_x", "Seat right / left", -0.6, 0.6, 0.01, 0.0, Fmt::Cm),
                     sli("seat_pitch_deg", "Head pitch", -45.0, 45.0, 1.0, 0.0, Fmt::Deg),
                     action("reset_seat", "Reset the seat position"),
-                    sli("fov", "Field of view", 0.0, 120.0, 1.0, 0.0, Fmt::Fov).z(20.0),
+                    sli("fov", "Field of view", 0.0, 120.0, 1.0, 0.0, Fmt::Fov).z(20.0).w(When::PlainView),
+                    sli("triple_fov_deg", "Field of view", 0.0, 120.0, 1.0, 0.0, Fmt::Fov).z(20.0).w(When::TripleView),
                     sli("look_sens", "Mouse look sensitivity", 0.1, 2.0, 0.05, 1.0, Fmt::Omsi),
                     tog("right_stick_look", "Right stick turns the view", true),
                     sli("look_smoothing_ms", "Smooth the mouse look", 0.0, 200.0, 10.0, 0.0, Fmt::OffMs),
@@ -441,7 +451,10 @@ fn gameplay() -> Tab {
                     sel("character_models", "Character models", "original", &[("original", "Original"), ("improved", "High quality (improved)")]).h("High quality draws the people with the Microsoft Rocketbox avatars and their living faces, on this computer only: servers and other players keep their own. They are downloaded once (about 310 MB)."),
                     tog("exact_fare", "Passengers pay the exact fare", true),
                     tog("pax_bad_driving", "Passengers react to bad driving", true),
+                    tog("passenger_connections", "Passenger connections between lines", false).h("Optional onward trips in single player only; disabled in multiplayer"),
+                    sli("passenger_transfer_percent", "Connection chance", 0.0, 100.0, 5.0, 20.0, Fmt::Pct100).w(When::PassengerConnections),
                     tog("passenger_hailing", "Passengers signal approaching buses", false),
+                    tog("passenger_full_bus_reaction", "Passengers react to full buses", false).h("Optional visual acknowledgement when an approaching compatible bus is at passenger capacity"),
                     tog("auto_announce", "Arrival announcements at the stop", false).h("On depot files that keep two recordings per stop (the Chinese maps), the arrival one is played as the bus reaches the stop: the IBIS's next stop key, pressed as the driver would"),
                     sli("pax_density", "How many passengers", 0.0, 2.0, 0.1, 1.0, Fmt::Pct),
                     tog("get_up", "Ability to get up (Ctrl+Shift+G)", false),
@@ -588,4 +601,66 @@ pub fn rows_of(keys: &[&str]) -> Vec<Row> {
     let mut out: Vec<Row> = tabs().into_iter().flat_map(|t| t.cols).flat_map(|c| c.rows).filter(|r| keys.contains(&r.key)).collect();
     out.sort_by_key(|r| keys.iter().position(|k| *k == r.key));
     out
+}
+
+/// Does the options window follow the game's own settings page? The page is `launcher/ui/js/pages/settings-schema.js` of openOMSI's
+/// source; the test reads it from `OPENOMSI_SCHEMA` or from `..\openOMSI` beside this folder, and passes (saying so) when it is not there.
+/// A setting the game shows that is neither here nor in `LEFT_OUT` fails it, so a new version of the game is noticed at build time.
+#[cfg(test)]
+mod follows_the_game {
+    use super::*;
+
+    /// Settings of the game's page this launcher leaves out on purpose: the phone's touch controls, the game launcher's own behaviour
+    /// (its updater and window), and the online "playing now" count.
+    const LEFT_OUT: [&str; 10] = [
+        "touch_door_mode",
+        "touch_pedal_deadzone",
+        "touch_pedal_length",
+        "machine_translation",
+        "launcher_rest",
+        "presence",
+        "update_auto",
+        "update_channel",
+        "update_check",
+        "update_notify",
+    ];
+
+    fn schema_text() -> Option<String> {
+        let mut c: Vec<std::path::PathBuf> = vec![];
+        c.extend(std::env::var_os("OPENOMSI_SCHEMA").map(std::path::PathBuf::from));
+        let here = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+        if let Some(parent) = here.parent() {
+            c.push(parent.join("openOMSI").join("launcher").join("ui").join("js").join("pages").join("settings-schema.js"));
+        }
+        c.into_iter().find_map(|p| std::fs::read_to_string(p).ok())
+    }
+
+    /// The setting keys of the page: the quoted names that follow `key:` up to the row's label.
+    fn game_keys(js: &str) -> Vec<String> {
+        let mut out: Vec<String> = vec![];
+        for line in js.lines() {
+            let Some(i) = line.find("key:") else { continue };
+            let rest = &line[i + 4..];
+            let rest = rest.split("label:").next().unwrap_or(rest);
+            for part in rest.split('\'').skip(1).step_by(2) {
+                if !part.is_empty() && part.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_') && !out.iter().any(|k| k == part) {
+                    out.push(part.to_string());
+                }
+            }
+        }
+        out
+    }
+
+    #[test]
+    fn no_setting_of_the_game_is_missing() {
+        let Some(js) = schema_text() else {
+            eprintln!("settings-schema.js of openOMSI not found (set OPENOMSI_SCHEMA): nothing compared");
+            return;
+        };
+        let ours = keys();
+        let theirs = game_keys(&js);
+        assert!(theirs.len() > 100, "the page was not read: {} keys", theirs.len());
+        let missing: Vec<&String> = theirs.iter().filter(|k| !ours.contains(&k.as_str()) && !LEFT_OUT.contains(&k.as_str())).collect();
+        assert!(missing.is_empty(), "the game's settings page has settings this launcher does not show (add a row in schema.rs, or list them in LEFT_OUT): {missing:?}");
+    }
 }
