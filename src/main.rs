@@ -41,6 +41,7 @@ mod situations;
 mod texts;
 mod texts_more;
 mod texts_hs;
+mod known;
 mod texts_es;
 mod texts_es2;
 mod theme;

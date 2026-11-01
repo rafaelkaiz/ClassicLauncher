@@ -22,12 +22,14 @@ pub struct State {
     ailists: Option<crate::ailists_ui::State>,
     trouble: Option<crate::troubleshoot_ui::State>,
     extra: Extra,
+    /// The settings the installed game knows (`known.rs`); `Some(None)` is "could not tell", `None` "not looked yet".
+    known: Option<Option<std::collections::HashSet<String>>>,
     message: String,
 }
 
 impl State {
     pub fn new() -> Self {
-        Self { cfg: GameCfg::load(), tabs: schema::tabs(), tab: 0, pending: false, controllers: None, keys: None, pads: std::env::var_os("CL_PADS").is_some(), ailists: None, trouble: None, extra: Extra::new(), message: String::new() }
+        Self { cfg: GameCfg::load(), tabs: schema::tabs(), tab: 0, pending: false, controllers: None, keys: None, pads: std::env::var_os("CL_PADS").is_some(), ailists: None, trouble: None, extra: Extra::new(), known: None, message: String::new() }
     }
 }
 
@@ -247,14 +249,22 @@ fn support_package(game: Option<&Path>) -> String {
 }
 
 /// A card of the tab: its title and its rows, under each section heading.
-fn draw_column(ui: &mut Ui, cfg: &mut GameCfg, col: &schema::Column, languages: &[(String, String)], x: &mut Extra, game: Option<&Path>, goto: &mut Option<&'static str>) -> bool {
+/// Is the row left out because the installed game does not know its setting? (only the rows that are a setting)
+fn unknown(row: &Row, known: Option<&std::collections::HashSet<String>>) -> bool {
+    let Some(known) = known else { return false };
+    matches!(row.kind, Kind::Toggle { .. } | Kind::Select { .. } | Kind::Slider { .. }) && !row.key.is_empty() && !known.contains(row.key)
+}
+
+fn draw_column(ui: &mut Ui, cfg: &mut GameCfg, col: &schema::Column, languages: &[(String, String)], x: &mut Extra, game: Option<&Path>, known: Option<&std::collections::HashSet<String>>, goto: &mut Option<&'static str>) -> bool {
     let mut changed = false;
     egui::Frame::new().fill(ui.visuals().faint_bg_color).stroke(ui.visuals().widgets.noninteractive.bg_stroke).corner_radius(6.0).inner_margin(egui::Margin::same(14)).show(ui, |ui| {
         ui.set_width(ui.available_width());
         ui.label(RichText::new(tr(col.title)).strong().size(17.0).color(pal().dark));
         ui.add_space(8.0);
-        for row in &col.rows {
-            if !shown(cfg, row.when) {
+        for (i, row) in col.rows.iter().enumerate() {
+            // a heading whose rows are all left out goes too
+            let empty_section = matches!(row.kind, Kind::Section) && col.rows[i + 1..].iter().take_while(|r| !matches!(r.kind, Kind::Section)).all(|r| unknown(r, known));
+            if !shown(cfg, row.when) || unknown(row, known) || empty_section {
                 continue;
             }
             match &row.kind {
@@ -389,13 +399,17 @@ pub fn show(ui: &mut Ui, st: &mut State, omsi: Option<&Path>, game: Option<&Path
         ui.label(tr("Could not save the settings: {}"));
         return;
     };
+    if st.known.is_none() {
+        st.known = Some(game.and_then(|g| crate::known::known(g, &schema::keys())));
+    }
+    let known = st.known.clone().flatten();
     let tab = &st.tabs[st.tab.min(st.tabs.len() - 1)];
     let mut changed = false;
     let mut goto: Option<&'static str> = None;
     egui::ScrollArea::vertical().id_salt(("options-tab", st.tab)).auto_shrink([false, false]).max_height((ui.available_height() - 36.0).max(100.0)).show(ui, |ui| {
         ui.columns(tab.cols.len(), |cols| {
             for (ui, col) in cols.iter_mut().zip(&tab.cols) {
-                changed |= draw_column(ui, cfg, col, &languages, &mut st.extra, game, &mut goto);
+                changed |= draw_column(ui, cfg, col, &languages, &mut st.extra, game, known.as_ref(), &mut goto);
             }
         });
     });
