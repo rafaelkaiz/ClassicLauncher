@@ -28,7 +28,7 @@ pub struct Prefs {
 impl Default for Prefs {
     fn default() -> Self {
         Self {
-            theme: Theme::Dark,
+            theme: Theme::Original,
             lang: Lang::En,
             omsi_dir: None,
             game: None,

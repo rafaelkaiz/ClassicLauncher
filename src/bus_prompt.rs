@@ -136,7 +136,7 @@ pub fn show(ctx: &egui::Context, p: &mut BusPrompt) -> Outcome {
             ui.horizontal_top(|ui| {
                 ui.allocate_ui_with_layout(egui::vec2(230.0, 322.0), egui::Layout::top_down(egui::Align::Min), |ui| {
                     ui.set_width(230.0);
-                    ui.label(RichText::new(tr("Make")).strong());
+                    ui.label(RichText::new(tr("Brand")).strong());
                     egui::ScrollArea::vertical().id_salt("bus-families").max_height(300.0).auto_shrink([false, false]).show(ui, |ui| {
                         for f in &families {
                             if ui.selectable_label(p.family.as_deref() == Some(*f), *f).clicked() {
