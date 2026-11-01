@@ -198,7 +198,7 @@ pub fn tr(key: &str) -> &str {
     key
 }
 
-/// The codes of the languages found in OMSI's `Languages` folder (a `<CODE>_basic.olf` file each), in alphabetical order.
+/// The codes of the languages found in OMSI's `Languages` folder (a `<CODE>_basic.olf` file each), in alphabetical order. Ruhrdeutsch (RUH) is left out.
 pub fn omsi_languages(omsi: &Path) -> Vec<Lang> {
     let mut codes: Vec<String> = std::fs::read_dir(omsi.join("Languages"))
         .into_iter()
@@ -207,7 +207,7 @@ pub fn omsi_languages(omsi: &Path) -> Vec<Lang> {
         .filter_map(|e| {
             let name = e.file_name().to_string_lossy().to_uppercase();
             let code = name.strip_suffix("_BASIC.OLF")?;
-            (code.len() == 3 && code.chars().all(|c| c.is_ascii_alphabetic())).then(|| code.to_string())
+            (code.len() == 3 && code != "RUH" && code.chars().all(|c| c.is_ascii_alphabetic())).then(|| code.to_string())
         })
         .collect();
     codes.sort();
