@@ -38,8 +38,8 @@ ventana, y no se cambia nada de tu instalación de OMSI 2.
 - **Actualizaciones de openOMSI.** Canal estable o beta, cualquier versión a elegir, comprobación SHA-256, prueba del programa nuevo
   antes de sustituir nada y vuelta atrás si algo falla.
 - **Arranca en ventana normal**, F11 para pantalla completa. **Ventanas propias.** Los diálogos y selectores son ventanas de verdad: se mueven a donde quieras y el launcher nunca las corta.
-- Tres temas (naranja de OMSI 2, oscuro, claro) y siete idiomas: español, inglés, alemán, polaco, checo, francés y portugués. Las pantallas
-  y los ajustes están traducidos en todos; los textos en alemán, polaco, checo, francés y portugués no los ha revisado ningún hablante nativo, así que se agradecen correcciones.
+- Tres temas (naranja de OMSI 2, oscuro, claro) y nueve idiomas: español, inglés, alemán, polaco, checo, francés, portugués, húngaro y serbio. Las pantallas
+  y los ajustes están traducidos en todos; los textos de todos los idiomas salvo el español y el inglés no los ha revisado ningún hablante nativo, así que se agradecen correcciones.
   Se pueden añadir más idiomas con un archivo de texto (`%APPDATA%\ClassicLauncher\lang`).
 
 ## Instalación

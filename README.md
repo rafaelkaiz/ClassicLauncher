@@ -37,8 +37,8 @@ OMSI 2 installation is changed.
 - **openOMSI updates.** Stable or beta channel, any version to choose from, SHA-256 check, a trial run of the new program before it
   replaces anything, and a rollback if something fails.
 - **Starts in a normal window**, F11 for full screen. **Windows of their own.** Dialogs and pickers are real windows: they can be moved anywhere, never cut off by the launcher.
-- Three themes (OMSI 2 orange, dark, light) and seven languages: English, Spanish, German, Polish, Czech, French and Portuguese. The main
-  screens and settings are translated in all of them; the German, Polish, Czech, French and Portuguese texts have not been reviewed by native speakers, so corrections are welcome.
+- Three themes (OMSI 2 orange, dark, light) and nine languages: English, Spanish, German, Polish, Czech, French, Portuguese, Hungarian and Serbian. The main
+  screens and settings are translated in all of them; the texts in all languages except English and Spanish have not been reviewed by native speakers, so corrections are welcome.
   More languages can be added with a text file (`%APPDATA%\ClassicLauncher\lang`).
 
 ## Install

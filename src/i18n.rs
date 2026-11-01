@@ -22,7 +22,9 @@ impl Lang {
     pub const Cs: Lang = Lang("CZE");
     pub const Fr: Lang = Lang("FRA");
     pub const Pt: Lang = Lang("POR");
-    pub const BUILTIN: [Lang; 7] = [Lang::En, Lang::Es, Lang::De, Lang::Pl, Lang::Cs, Lang::Fr, Lang::Pt];
+    pub const Hu: Lang = Lang("HUN");
+    pub const Sr: Lang = Lang("SRB");
+    pub const BUILTIN: [Lang; 9] = [Lang::En, Lang::Es, Lang::De, Lang::Pl, Lang::Cs, Lang::Fr, Lang::Pt, Lang::Hu, Lang::Sr];
 
     /// Column of the table of the other built-in languages; `None` for English (the key) and Spanish (its own table).
     fn column(self) -> Option<usize> {
@@ -32,6 +34,15 @@ impl Lang {
             "CZE" => Some(2),
             "FRA" => Some(3),
             "POR" => Some(4),
+            _ => None,
+        }
+    }
+
+    /// Column of the Hungarian and Serbian table (`texts_hs.rs`).
+    fn column_hs(self) -> Option<usize> {
+        match self.0 {
+            "HUN" => Some(0),
+            "SRB" => Some(1),
             _ => None,
         }
     }
@@ -51,6 +62,8 @@ impl Lang {
             "CS" => "CZE",
             "FR" => "FRA",
             "PT" => "POR",
+            "HU" => "HUN",
+            "SR" => "SRB",
             other => other,
         };
         if full.is_empty() {
@@ -195,6 +208,11 @@ pub fn tr(key: &str) -> &str {
             return row[c];
         }
     }
+    if let Some(c) = cur.lang.column_hs() {
+        if let Some(row) = hs().get(key) {
+            return row[c];
+        }
+    }
     key
 }
 
@@ -286,6 +304,39 @@ mod tests {
 fn more() -> &'static HashMap<&'static str, [&'static str; 5]> {
     static T: OnceLock<HashMap<&'static str, [&'static str; 5]>> = OnceLock::new();
     T.get_or_init(|| crate::texts_more::MORE.iter().copied().collect())
+}
+
+fn hs() -> &'static HashMap<&'static str, [&'static str; 2]> {
+    static T: OnceLock<HashMap<&'static str, [&'static str; 2]>> = OnceLock::new();
+    T.get_or_init(|| crate::texts_hs::HS.iter().copied().collect())
+}
+
+#[cfg(test)]
+mod hs_tests {
+    use super::*;
+
+    #[test]
+    fn hungarian_and_serbian_translate() {
+        set_lang(Lang::Hu);
+        assert_eq!(tr("Choose a bus"), "Válassz buszt");
+        set_lang(Lang::Sr);
+        assert_eq!(tr("Choose a bus"), "Izaberi autobus");
+        assert_eq!(tr("A text nobody translated"), "A text nobody translated");
+        set_lang(Lang::En);
+    }
+
+    /// Every row translates a text the other table also has, and keeps its placeholders.
+    #[test]
+    fn every_row_matches_the_other_table() {
+        let more: std::collections::HashSet<&str> = crate::texts_more::MORE.iter().map(|(k, _)| *k).collect();
+        for (key, row) in crate::texts_hs::HS {
+            assert!(more.contains(key), "{key}");
+            for t in row {
+                assert_eq!(key.matches("{}").count(), t.matches("{}").count(), "{key} / {t}");
+            }
+        }
+        assert_eq!(crate::texts_hs::HS.len(), crate::texts_more::MORE.len());
+    }
 }
 
 #[cfg(test)]
