@@ -2,7 +2,7 @@
 //! text in the current language and falls back to English when a string has no translation. Strings with `{}` are templates
 //! filled in with `trf`.
 //!
-//! Spanish is built in. Any other language (the ones in OMSI's `Languages` folder included) comes from a file
+//! Spanish is built in. Any other language comes from a file
 //! `%APPDATA%\ClassicLauncher\lang\<CODE>.txt`; `write_template` creates one to translate.
 
 use std::collections::HashMap;
@@ -215,7 +215,7 @@ pub fn omsi_languages(omsi: &Path) -> Vec<Lang> {
     codes.iter().map(|c| Lang::from_code(c)).collect()
 }
 
-/// Every language the launcher can be shown in: its built-in ones, those OMSI has and those with a file in the `lang` folder.
+/// Every language the launcher can be shown in: its built-in ones and those with a file in the `lang` folder; with a folder given, also the ones OMSI has (used by the options window for the game's own language).
 pub fn available(omsi: Option<&Path>) -> Vec<Lang> {
     let mut all: Vec<Lang> = Lang::BUILTIN.to_vec();
     if let Some(o) = omsi {

@@ -415,7 +415,7 @@ pub const ES: &[(&str, &str)] = &[
     ("Updates", "Actualizaciones"),
     ("Launcher language", "Idioma del launcher"),
     ("Open the languages folder", "Abrir carpeta de idiomas"),
-    ("The languages in OMSI's Languages folder show up by themselves; for their launcher texts add a <CODE>.txt file to the languages folder.", "Los idiomas de la carpeta Languages de OMSI aparecen solos; para sus textos del launcher añade un archivo <CÓDIGO>.txt en la carpeta de idiomas."),
+    ("To add a language to the launcher, put a <CODE>.txt file in the languages folder.", "Para añadir un idioma al launcher, pon un archivo <CÓDIGO>.txt en la carpeta de idiomas."),
     ("Theme", "Tema"),
     ("Open the launcher full screen (F11)", "Abrir el launcher a pantalla completa (F11)"),
     ("Other folder:", "Otra carpeta:"),

@@ -1338,7 +1338,7 @@ impl App {
                     ui.horizontal(|ui| {
                         ui.label(tr("Launcher language"));
                         egui::ComboBox::from_id_salt("launcher_lang").selected_text(self.prefs.lang.name()).show_ui(ui, |ui| {
-                            for l in i18n::available(self.omsi.as_deref()) {
+                            for l in i18n::available(None) {
                                 if ui.selectable_value(&mut self.prefs.lang, l, l.name()).changed() {
                                     i18n::set_lang(l);
                                     self.status = tr("Ready.").to_string();
@@ -1362,7 +1362,7 @@ impl App {
                             omsi::open_folder(&dir);
                         }
                     });
-                    ui.label(RichText::new(tr("The languages in OMSI's Languages folder show up by themselves; for their launcher texts add a <CODE>.txt file to the languages folder.")).italics().size(12.0));
+                    ui.label(RichText::new(tr("To add a language to the launcher, put a <CODE>.txt file in the languages folder.")).italics().size(12.0));
                     ui.horizontal(|ui| {
                         ui.label(tr("Theme"));
                         for t in theme::Theme::ALL {
