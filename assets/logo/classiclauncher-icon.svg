@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="ClassicLauncher">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9e1a"/><stop offset="1" stop-color="#e06610"/></linearGradient>
+    <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256">
+      <rect width="256" height="256" fill="white"/>
+      <rect y="139.5" width="256" height="4.6"/><rect y="156.2" width="256" height="6.1"/><rect y="174.1" width="256" height="7.7"/><rect y="193.3" width="256" height="9.2"/>
+    </mask>
+  </defs>
+  <rect x="15.4" y="15.4" width="225.3" height="225.3" rx="56.3" fill="url(#bg)"/>
+  <g mask="url(#cut)"><g transform="translate(128 128) skewX(-11.9) translate(-128 -128)"><path d="M175.1 167.5 A61.5 61.5 0 1 1 175.1 88.5" fill="none" stroke="#fff" stroke-width="41"/></g></g>
+</svg>

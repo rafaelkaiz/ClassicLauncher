@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClassicLauncher</title>
+<link rel="icon" type="image/svg+xml" href="img/icon.svg">
+<meta name="description" content="Disfruta de openOMSI con un menú más clásico. / Enjoy openOMSI with a more classic menu.">
+<meta property="og:title" content="ClassicLauncher">
+<meta property="og:description" content="Disfruta de openOMSI con un menú más clásico. / Enjoy openOMSI with a more classic menu.">
+<meta property="og:image" content="https://rafaelkaiz.github.io/ClassicLauncher/img/start.png">
+<style>
+  :root {
+    --orange: #ff9e1a; --orange2: #e06610; --amber: #ffc233; --brown: #962800; --deep: #2b1206; --deep2: #3d1b0a;
+    --cream: #fff8ec; --card: #ffffff; --ink: #3b1405; --muted: #7a4a30; --line: #f1d9b5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --cream: #1c0f07; --card: #2a170c; --ink: #ffe9c9; --muted: #d9ae86; --line: #4a2a14; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font: 17px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--cream); }
+  a { color: var(--brown); }
+  @media (prefers-color-scheme: dark) { a { color: var(--amber); } }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+  img { max-width: 100%; }
+
+  /* the signature: slanted letters cut by stripes in their lower half */
+  .cut { font-style: italic; color: #fff; display: inline-block; padding-right: .06em;
+    background: linear-gradient(#fff 0 56%, transparent 56% 59%, #fff 59% 66%, transparent 66% 70%, #fff 70% 78%, transparent 78% 83%, #fff 83% 92%, transparent 92% 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none; }
+
+  /* top bar */
+  .top { position: sticky; top: 0; z-index: 10; background: rgba(150, 40, 0, .94); backdrop-filter: blur(8px); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
+  .brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 800; font-size: 19px; letter-spacing: .2px; }
+  .brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .top nav { display: flex; align-items: center; gap: 22px; }
+  .top nav a { color: #ffe3b8; text-decoration: none; font-size: 15px; font-weight: 600; }
+  .top nav a:hover { color: #fff; }
+  .lang { display: flex; border: 1px solid #ffb868; border-radius: 999px; overflow: hidden; }
+  .lang button { background: transparent; border: 0; color: #ffe3b8; padding: 4px 12px; cursor: pointer; font: 700 13px inherit; font-family: inherit; }
+  .lang button.on { background: #fff; color: var(--brown); }
+  @media (max-width: 720px) { .top nav a.hide { display: none; } }
+
+  /* hero */
+  .hero { position: relative; overflow: hidden; color: #fff; background:
+      radial-gradient(900px 500px at 82% 10%, rgba(255, 220, 130, .55), transparent 60%),
+      linear-gradient(160deg, var(--amber) 0%, var(--orange) 38%, var(--orange2) 100%);
+    padding: 70px 0 150px; clip-path: polygon(0 0, 100% 0, 100% 86%, 0 100%); }
+  .hero::before { content: ""; position: absolute; inset: 0; opacity: .12;
+    background: repeating-linear-gradient(-12deg, #fff 0 2px, transparent 2px 46px); }
+  .hero .wrap { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: center; }
+  @media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; } .hero { padding-bottom: 120px; } }
+  .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(150, 40, 0, .85); padding: 5px 14px; border-radius: 999px; font-size: 14px; font-weight: 700; letter-spacing: .3px; }
+  .badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); display: block; }
+  h1 { font-size: clamp(38px, 6.4vw, 70px); line-height: 1.02; margin: 18px 0 18px; font-weight: 900; letter-spacing: -1.5px; text-shadow: 0 3px 0 rgba(150, 40, 0, .25); }
+  .lead { font-size: 20px; max-width: 540px; margin: 0 0 28px; color: #fff4e0; }
+  .btns { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 9px; padding: 14px 26px; border-radius: 12px; font-weight: 800; font-size: 17px; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.main { background: var(--brown); color: #fff; box-shadow: 0 8px 0 #6b1c00, 0 16px 28px rgba(80, 20, 0, .35); }
+  .btn.main:hover { box-shadow: 0 10px 0 #6b1c00, 0 20px 32px rgba(80, 20, 0, .4); }
+  .btn.ghost { border: 2px solid rgba(255, 255, 255, .85); color: #fff; }
+  .btn.ghost:hover { background: rgba(255, 255, 255, .15); }
+  .btn svg { width: 20px; height: 20px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 30px 0 0; padding: 0; list-style: none; font-size: 15px; font-weight: 600; color: #fff4e0; }
+  .facts li::before { content: "✓ "; color: #fff; font-weight: 900; }
+
+  .window { border-radius: 12px; background: #1f1209; box-shadow: 0 30px 60px rgba(70, 20, 0, .55), 0 0 0 1px rgba(255, 255, 255, .2); transform: perspective(1400px) rotateY(-9deg) rotateX(3deg); transition: transform .4s; }
+  .window:hover { transform: perspective(1400px) rotateY(-2deg) rotateX(1deg) scale(1.01); }
+  .window .bar { height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 12px; background: #3d1b0a; border-radius: 12px 12px 0 0; }
+  .window .bar i { width: 11px; height: 11px; border-radius: 50%; background: #ff9e1a; opacity: .9; }
+  .window .bar i:nth-child(2) { opacity: .6; } .window .bar i:nth-child(3) { opacity: .35; }
+  .window img { display: block; width: 100%; height: auto; border-radius: 0 0 12px 12px; }
+  @media (max-width: 900px) { .window { transform: none; } }
+
+  /* sections */
+  section { padding: 76px 0 0; }
+  .kicker { font-size: 13px; font-weight: 800; letter-spacing: 2.2px; text-transform: uppercase; color: var(--orange2); margin: 0 0 8px; }
+  h2 { font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; margin: 0 0 18px; font-weight: 900; letter-spacing: -1px; }
+  .intro { max-width: 760px; font-size: 19px; color: var(--muted); }
+  .idea { padding-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; }
+  @media (max-width: 860px) { .idea { grid-template-columns: 1fr; } }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .compare div { border-radius: 16px; padding: 20px 22px; background: var(--card); border: 1px solid var(--line); }
+  .compare .a { background: linear-gradient(160deg, var(--amber), var(--orange)); border: 0; color: #4a1500; }
+  .compare b { display: block; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; opacity: .8; }
+  .compare p { margin: 0; font-size: 16px; line-height: 1.45; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 20px; margin-top: 30px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px 22px 22px; position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(150, 40, 0, .16); }
+  .card::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: linear-gradient(90deg, var(--amber), var(--orange2)); }
+  .ico { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; margin-bottom: 14px; background: linear-gradient(160deg, var(--amber), var(--orange2)); box-shadow: inset 0 -3px 0 rgba(120, 30, 0, .25); }
+  .ico svg { width: 27px; height: 27px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .card h3 { margin: 0 0 6px; font-size: 19px; line-height: 1.2; }
+  .card p { margin: 0; font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+
+  /* showcase */
+  .show { margin-top: 90px; padding: 80px 0 90px; color: #ffe9c9; background:
+      radial-gradient(700px 360px at 12% 0%, rgba(255, 158, 26, .22), transparent 70%), linear-gradient(180deg, var(--deep), var(--deep2)); }
+  .show h2 { color: #fff; }
+  .show .kicker { color: var(--amber); }
+  .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; margin-top: 34px; }
+  .shots figure:first-child { grid-column: 1 / -1; }
+  @media (max-width: 800px) { .shots { grid-template-columns: 1fr; } }
+  figure { margin: 0; }
+  .shot { display: block; border-radius: 14px; overflow: hidden; background: #000; box-shadow: 0 24px 50px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 190, 90, .25); transition: transform .25s; }
+  .shot:hover { transform: translateY(-5px) scale(1.005); }
+  .shot img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 12px; font-size: 15.5px; color: #e8c79c; }
+  figcaption b { color: #fff; }
+
+  /* download */
+  .get { margin-top: 80px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin: 30px 0 28px; counter-reset: s; }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px; counter-increment: s; }
+  .step::before { content: counter(s); display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; margin-bottom: 12px; font-weight: 900; font-size: 20px; color: #fff; background: linear-gradient(160deg, var(--amber), var(--orange2)); }
+  .step p { margin: 0; color: var(--muted); }
+  .note { border-radius: 16px; padding: 18px 22px; background: color-mix(in srgb, var(--amber) 22%, var(--card)); border: 1px solid var(--amber); font-size: 16px; }
+  code { background: color-mix(in srgb, var(--orange) 18%, transparent); padding: 1px 7px; border-radius: 6px; font-size: .92em; }
+
+  footer { margin-top: 90px; padding: 34px 0 44px; background: var(--brown); color: #ffe3b8; font-size: 14.5px; }
+  footer a { color: #fff; }
+  footer .wrap { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; }
+  footer img { width: 120px; height: auto; border-radius: 22px; }
+  footer p { margin: 0 0 8px; }
+  @media (max-width: 640px) { footer .wrap { grid-template-columns: 1fr; } }
+
+  html[lang="es"] [data-l="en"], html[lang="en"] [data-l="es"] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <a class="brand" href="./"><img src="img/icon.svg" alt="">ClassicLauncher</a>
+  <nav>
+    <a class="hide" href="#features"><span data-l="es">Qué hace</span><span data-l="en">Features</span></a>
+    <a class="hide" href="#screens"><span data-l="es">Capturas</span><span data-l="en">Screenshots</span></a>
+    <a class="hide" href="#get"><span data-l="es">Descargar</span><span data-l="en">Download</span></a>
+    <span class="lang"><button id="b-es" class="on" onclick="setLang('es')">ES</button><button id="b-en" onclick="setLang('en')">EN</button></span>
+  </nav>
+</div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="badge"><i></i>1.0-beta1 · Windows</span>
+      <h1 data-l="es">openOMSI,<br>con un menú <span class="cut">clásico</span></h1>
+      <h1 data-l="en">openOMSI,<br>with a <span class="cut">classic</span> menu</h1>
+      <p class="lead" data-l="es">La pantalla de inicio de siempre: eliges mapa, autobús, conductor y hora, y a conducir. Con todo lo que openOMSI puede configurar a un clic.</p>
+      <p class="lead" data-l="en">The start screen you know: pick the map, bus, driver and time, and drive. With everything openOMSI can be set up with, one click away.</p>
+      <div class="btns">
+        <a class="btn main" href="https://github.com/rafaelkaiz/ClassicLauncher/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg><span data-l="es">Descargar la beta</span><span data-l="en">Download the beta</span></a>
+        <a class="btn ghost" href="https://github.com/rafaelkaiz/ClassicLauncher">GitHub</a>
+      </div>
+      <ul class="facts">
+        <li data-l="es">Sin instalador</li><li data-l="en">No installer</li>
+        <li data-l="es">7 idiomas</li><li data-l="en">7 languages</li>
+        <li data-l="es">Software libre GPL v3</li><li data-l="en">Free software, GPL v3</li>
+      </ul>
+    </div>
+    <div class="window">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <img src="img/start.png" alt="Pantalla de inicio / Start screen">
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="idea">
+    <div>
+      <p class="kicker" data-l="es">La idea</p><p class="kicker" data-l="en">The idea</p>
+      <h2 data-l="es">Lo nuevo, con la comodidad de siempre</h2><h2 data-l="en">The new, with the comfort of the old</h2>
+      <p class="intro" data-l="es">Queremos disfrutar de <a href="https://openomsi.org/">openOMSI</a> sin renunciar al menú clásico de OMSI 2: una sola pantalla, sencilla y rápida, donde se ve de un vistazo lo que vas a conducir. No se toca nada de tu instalación de OMSI 2.</p>
+      <p class="intro" data-l="en">We want to enjoy <a href="https://openomsi.org/">openOMSI</a> without giving up OMSI 2's classic menu: one simple, quick screen where you see at a glance what you are about to drive. Nothing in your OMSI 2 installation is touched.</p>
+    </div>
+    <div class="compare">
+      <div class="a"><b>ClassicLauncher</b><p data-l="es">Mapa, bus, conductor y hora en una pantalla. Todos los ajustes a un clic.</p><p data-l="en">Map, bus, driver and time on one screen. All the settings one click away.</p></div>
+      <div><b>openOMSI</b><p data-l="es">El simulador y su motor, tal cual. ClassicLauncher solo lo inicia.</p><p data-l="en">The simulator and its engine, as is. ClassicLauncher only starts it.</p></div>
+    </div>
+  </section>
+
+  <section id="features">
+    <p class="kicker" data-l="es">Qué hace</p><p class="kicker" data-l="en">What it does</p>
+    <h2 data-l="es">Todo lo que echabas de menos</h2><h2 data-l="en">Everything you missed</h2>
+    <div class="grid">
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg></div>
+        <h3 data-l="es">Pantalla de inicio clásica</h3><h3 data-l="en">The classic start screen</h3>
+        <p data-l="es">Mapa, «aparece en» con los lugares de inicio del mapa, último estado o situación guardada, conductor con su expediente, fecha y hora.</p>
+        <p data-l="en">Map, "appear at" with the map's own start places, last state or a saved situation, driver with the personnel file, date and time.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="3"/><path d="M3 11h18M8 17v2M16 17v2"/></svg></div>
+        <h3 data-l="es">Elegir autobús como en OMSI 2</h3><h3 data-l="en">Choose a bus like in OMSI 2</h3>
+        <p data-l="es">Marca, modelo y repintado, matrícula y número, la descripción en tu idioma y una exposición 3D dibujada por el propio motor de openOMSI.</p>
+        <p data-l="en">Brand, model and repaint, plate and number, the description in your language and a 3D showroom drawn by openOMSI's own renderer.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></div>
+        <h3 data-l="es">Todos los ajustes de openOMSI</h3><h3 data-l="en">All of openOMSI's settings</h3>
+        <p data-l="es">Las mismas pestañas que la página del juego, guardadas al instante, con preajustes, perfiles y la prueba de optimización.</p>
+        <p data-l="en">The same tabs as the game's page, saved at once, with presets, profiles and the optimise run.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M12 14.5V21M9.8 10.8L4 9M14.2 10.8L20 9"/></svg></div>
+        <h3 data-l="es">Controles completos</h3><h3 data-l="en">Full controls</h3>
+        <p data-l="es">Teclas con captura y avisos, mandos leídos como lo hace el juego, ejes en vivo, asistente paso a paso y prueba del sentido de la fuerza.</p>
+        <p data-l="en">Keys with capture and warnings, controllers read the way the game does, live axes, step-by-step setup and a force feedback direction test.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 17h18M5 17l1-6h12l1 6"/><circle cx="8" cy="19" r="1.5"/><circle cx="16" cy="19" r="1.5"/><path d="M8 7h8"/></svg></div>
+        <h3 data-l="es">Listas de IA</h3><h3 data-l="en">AI lists</h3>
+        <p data-l="es">Tráfico del mapa con pesos, autobuses de cada cochera con números, matrículas y repintados, y qué tipos corren en cada línea.</p>
+        <p data-l="en">The map's traffic with weights, each depot's buses with numbers, plates and repaints, and which types run on each line.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></div>
+        <h3 data-l="es">Actualiza openOMSI</h3><h3 data-l="en">Updates openOMSI</h3>
+        <p data-l="es">Canal estable o beta, cualquier versión a elegir, comprobación SHA-256, prueba del programa nuevo y vuelta atrás si algo falla.</p>
+        <p data-l="en">Stable or beta channel, any version to choose from, SHA-256 check, a trial run of the new program and a rollback if something fails.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5 5L3 18l3 3 6.5-6.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z"/></svg></div>
+        <h3 data-l="es">Solución de problemas</h3><h3 data-l="en">Troubleshooting</h3>
+        <p data-l="es">La prueba de modelos del juego sobre cualquier autobús, mapa, archivo o carpeta.</p>
+        <p data-l="en">The game's own model test on any bus, map, file or folder.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></div>
+        <h3 data-l="es">Siete idiomas, tres temas</h3><h3 data-l="en">Seven languages, three themes</h3>
+        <p data-l="es">Español, inglés, alemán, polaco, checo, francés y portugués; tema naranja de OMSI 2, oscuro o claro. Las traducciones al alemán, polaco, checo, francés y portugués no están revisadas por nativos: se agradecen correcciones.</p>
+        <p data-l="en">Spanish, English, German, Polish, Czech, French and Portuguese; OMSI 2 orange, dark or light theme. The German, Polish, Czech, French and Portuguese texts are not yet reviewed by native speakers: corrections are welcome.</p></div>
+    </div>
+  </section>
+</main>
+
+<div class="show" id="screens"><div class="wrap">
+  <p class="kicker" data-l="es">Capturas</p><p class="kicker" data-l="en">Screenshots</p>
+  <h2 data-l="es">Así se ve</h2><h2 data-l="en">This is how it looks</h2>
+  <div class="shots">
+    <figure><a class="shot" href="img/bus-picker.png"><img src="img/bus-picker.png" alt="Elegir autobús / Choose a bus"></a>
+      <figcaption data-l="es"><b>Elegir autobús:</b> marca, modelo, exposición 3D y repintados.</figcaption><figcaption data-l="en"><b>Choosing a bus:</b> brand, model, 3D showroom and repaints.</figcaption></figure>
+    <figure><a class="shot" href="img/start.png"><img src="img/start.png" alt="Pantalla de inicio / Start screen"></a>
+      <figcaption data-l="es"><b>Inicio:</b> mapa, lugar de aparición, conductor, fecha y hora.</figcaption><figcaption data-l="en"><b>Start:</b> map, where you appear, driver, date and time.</figcaption></figure>
+    <figure><a class="shot" href="img/settings.png"><img src="img/settings.png" alt="Ajustes de openOMSI / openOMSI settings"></a>
+      <figcaption data-l="es"><b>Ajustes:</b> los de openOMSI, en las mismas pestañas que el juego.</figcaption><figcaption data-l="en"><b>Settings:</b> openOMSI's, in the same tabs as the game.</figcaption></figure>
+  </div>
+</div></div>
+
+<main class="wrap">
+  <section class="get" id="get">
+    <p class="kicker" data-l="es">Descargar</p><p class="kicker" data-l="en">Download</p>
+    <h2 data-l="es">Tres pasos y a conducir</h2><h2 data-l="en">Three steps and you drive</h2>
+    <div class="steps">
+      <div class="step"><p data-l="es">Descarga el <code>.zip</code> de <a href="https://github.com/rafaelkaiz/ClassicLauncher/releases/latest">la última versión</a>.</p><p data-l="en">Download the <code>.zip</code> of <a href="https://github.com/rafaelkaiz/ClassicLauncher/releases/latest">the latest version</a>.</p></div>
+      <div class="step"><p data-l="es">Descomprímelo donde quieras. No hay instalador.</p><p data-l="en">Unzip it anywhere. There is no installer.</p></div>
+      <div class="step"><p data-l="es">Ejecuta <code>classic-launcher.exe</code>. Encuentra <code>openomsi.exe</code> solo o te lo pide.</p><p data-l="en">Run <code>classic-launcher.exe</code>. It finds <code>openomsi.exe</code> by itself or asks for it.</p></div>
+    </div>
+    <div class="note" data-l="es"><strong>Es una beta.</strong> Funciona, pero puede tener fallos. Requiere Windows 10/11 de 64 bits; una versión para Linux necesita reescribir la lectura de mandos, los diálogos y el instalador de actualizaciones. Cuéntanos qué falla en <a href="https://github.com/rafaelkaiz/ClassicLauncher/issues">GitHub</a>.</div>
+    <div class="note" data-l="en"><strong>This is a beta.</strong> It works, but it may have bugs. It needs 64-bit Windows 10/11; a Linux version needs the controller reading, the dialogs and the update installer written again. Tell us what fails on <a href="https://github.com/rafaelkaiz/ClassicLauncher/issues">GitHub</a>.</div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="img/icon.svg" alt="ClassicLauncher">
+    <div>
+      <p data-l="es">ClassicLauncher es software libre bajo la <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a> · <a href="https://github.com/rafaelkaiz/ClassicLauncher">código fuente</a>.</p>
+      <p data-l="en">ClassicLauncher is free software under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a> · <a href="https://github.com/rafaelkaiz/ClassicLauncher">source code</a>.</p>
+      <p data-l="es">Proyecto independiente: openOMSI es otro proyecto, de sus autores, y OMSI es propiedad de sus dueños; este launcher no está afiliado a ninguno.</p>
+      <p data-l="en">An independent project: openOMSI is another project, by its own authors, and OMSI belongs to its owners; this launcher is not affiliated with either.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function setLang(l) {
+    document.documentElement.lang = l;
+    document.getElementById('b-es').className = l === 'es' ? 'on' : '';
+    document.getElementById('b-en').className = l === 'en' ? 'on' : '';
+    try { localStorage.setItem('lang', l); } catch (e) {}
+  }
+  (function () {
+    var l = null;
+    try { l = localStorage.getItem('lang'); } catch (e) {}
+    if (!l) l = (navigator.language || 'es').toLowerCase().indexOf('es') === 0 ? 'es' : 'en';
+    setLang(l);
+  })();
+</script>
+</body>
+</html>
