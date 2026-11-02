@@ -1385,7 +1385,7 @@ impl App {
                             prefs::sync_official_theme(self.prefs.theme);
                         }
                     }
-                    ui.label(RichText::new(tr("Light and the OMSI 2 orange are the light look of openOMSI, Dark is its dark one; it is written to its settings.")).italics().size(12.0));
+                    ui.label(RichText::new(tr("Light and the ClassicLauncher orange are the light look of openOMSI, Dark is its dark one; it is written to its settings.")).italics().size(12.0));
                     if ui.checkbox(&mut self.prefs.fullscreen, tr("Open the launcher full screen (F11)")).changed() {
                         changed = true;
                     }
