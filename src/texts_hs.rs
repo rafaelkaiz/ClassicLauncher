@@ -122,6 +122,8 @@ pub const HS: &[(&str, [&str; 2])] = &[
     ("No", ["Nem", "Ne"]),
     ("Without a bus", ["Busz nélkül", "Bez autobusa"]),
     ("Manufacturer", ["Gyártó", "Proizvođač"]),
+    ("Use this look for openOMSI's own launcher and the game too", ["Ez a megjelenés az openOMSI saját launcherében és a játékban is", "Koristi ovaj izgled i za sopstveni launcher openOMSI-ja i za igru"]),
+    ("Light and the OMSI 2 orange are the light look of openOMSI, Dark is its dark one; it is written to its settings.", ["A világos és az OMSI 2 narancs az openOMSI világos megjelenése, a sötét a sötét; az openOMSI beállításaiba íródik.", "Svetla i narandžasta OMSI 2 su svetli izgled openOMSI-ja, Tamna je tamni; upisuje se u njegova podešavanja."]),
     ("A profile named {} already exists. Overwrite it?", ["Már létezik {} nevű profil. Felülírod?", "Profil pod imenom {} već postoji. Prepisati ga?"]),
     ("Overwrite", ["Felülírás", "Prepiši"]),
     ("Model", ["Modell", "Model"]),

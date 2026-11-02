@@ -23,6 +23,8 @@ pub struct Prefs {
     pub show_command: bool,
     /// openOMSI updates: the beta channel.
     pub omsi_beta: bool,
+    /// Write the launcher's look (light or dark) to openOMSI's `ui_theme`, which its own launcher and the game's interface follow.
+    pub sync_theme: bool,
 }
 
 impl Default for Prefs {
@@ -41,6 +43,7 @@ impl Default for Prefs {
             schedule: true,
             show_command: false,
             omsi_beta: false,
+            sync_theme: true,
         }
     }
 }
@@ -90,6 +93,7 @@ impl Prefs {
                 "schedule" => s.schedule = v != "0",
                 "show_command" => s.show_command = v == "1",
                 "omsi_beta" => s.omsi_beta = v == "1",
+                "sync_theme" => s.sync_theme = v != "0",
                 _ => {}
             }
         }
@@ -103,7 +107,7 @@ impl Prefs {
         }
         let path_text = |p: &Option<PathBuf>| p.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
         let text = format!(
-            "theme={}\nlanguage={}\nomsi_dir={}\ngame={}\nclose_on_start={}\nfullscreen={}\nmap={}\ndriver={}\ntraffic={}\npassengers={}\nschedule={}\nshow_command={}\nomsi_beta={}\n",
+            "theme={}\nlanguage={}\nomsi_dir={}\ngame={}\nclose_on_start={}\nfullscreen={}\nmap={}\ndriver={}\ntraffic={}\npassengers={}\nschedule={}\nshow_command={}\nomsi_beta={}\nsync_theme={}\n",
             self.theme.key(),
             self.lang.code(),
             path_text(&self.omsi_dir),
@@ -117,6 +121,7 @@ impl Prefs {
             u8::from(self.schedule),
             u8::from(self.show_command),
             u8::from(self.omsi_beta),
+            u8::from(self.sync_theme),
         );
         std::fs::write(path, text).map_err(|e| trf("Could not save the settings: {}", &[&e.to_string()]))
     }
@@ -151,5 +156,41 @@ mod save_tests {
             }
         }
         assert!(back.show_command);
+    }
+}
+
+/// The look openOMSI's own launcher takes for a launcher theme: the OMSI 2 orange and the light one are light, the dark one is dark
+/// (openOMSI knows these two only).
+pub fn official_theme(t: Theme) -> &'static str {
+    match t {
+        Theme::Dark => "dark",
+        Theme::Original | Theme::Light => "light",
+    }
+}
+
+/// Writes `ui_theme` of openOMSI's settings for the theme, when it is not that already (the file is backed up first, as always).
+pub fn sync_official_theme(t: Theme) {
+    let Some(mut cfg) = crate::gamecfg::GameCfg::load() else { return };
+    let want = official_theme(t);
+    if cfg.get("ui_theme").as_deref() != Some(want) {
+        cfg.set("ui_theme", want);
+        let _ = cfg.save();
+    }
+}
+
+#[cfg(test)]
+mod official_theme_tests {
+    use super::*;
+
+    #[test]
+    fn orange_and_light_are_light_and_dark_is_dark() {
+        assert_eq!(official_theme(Theme::Original), "light");
+        assert_eq!(official_theme(Theme::Light), "light");
+        assert_eq!(official_theme(Theme::Dark), "dark");
+    }
+
+    #[test]
+    fn the_look_is_kept_by_default() {
+        assert!(Prefs::default().sync_theme);
     }
 }

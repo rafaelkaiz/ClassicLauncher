@@ -428,6 +428,8 @@ pub const ES2: &[(&str, &str)] = &[
     ("Turn off the 3D view", "Desactivar vista 3D"),
     ("Turn on the 3D view", "Activar vista 3D"),
     ("Manufacturer", "Fabricante"),
+    ("Use this look for openOMSI's own launcher and the game too", "Usar este aspecto también en el launcher propio de openOMSI y en el juego"),
+    ("Light and the OMSI 2 orange are the light look of openOMSI, Dark is its dark one; it is written to its settings.", "Claro y el naranja de OMSI 2 son el aspecto claro de openOMSI, Oscuro es el oscuro; se escribe en sus ajustes."),
     ("A profile named {} already exists. Overwrite it?", "Ya hay un perfil llamado {}. ¿Quieres sobrescribirlo?"),
     ("Overwrite", "Sobrescribir"),
     ("No preview of this bus", "Sin vista previa de este autobús"),

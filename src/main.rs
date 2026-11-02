@@ -241,6 +241,9 @@ impl App {
         egui_extras::install_image_loaders(&cc.egui_ctx);
         i18n::set_lang(prefs.lang);
         theme::apply(&cc.egui_ctx, prefs.theme);
+        if prefs.sync_theme {
+            prefs::sync_official_theme(prefs.theme);
+        }
         let omsi = omsi::find_omsi_dir(prefs.omsi_dir.clone());
         let game = game::find_game(prefs.game.as_deref());
         let (y, mo, d, h, mi, s) = omsi::local_now();
@@ -1370,9 +1373,19 @@ impl App {
                             if ui.radio_value(&mut self.prefs.theme, t, t.label()).changed() {
                                 theme::apply(ui.ctx(), t);
                                 changed = true;
+                                if self.prefs.sync_theme {
+                                    prefs::sync_official_theme(t);
+                                }
                             }
                         }
                     });
+                    if ui.checkbox(&mut self.prefs.sync_theme, tr("Use this look for openOMSI's own launcher and the game too")).changed() {
+                        changed = true;
+                        if self.prefs.sync_theme {
+                            prefs::sync_official_theme(self.prefs.theme);
+                        }
+                    }
+                    ui.label(RichText::new(tr("Light and the OMSI 2 orange are the light look of openOMSI, Dark is its dark one; it is written to its settings.")).italics().size(12.0));
                     if ui.checkbox(&mut self.prefs.fullscreen, tr("Open the launcher full screen (F11)")).changed() {
                         changed = true;
                     }
