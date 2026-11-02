@@ -27,8 +27,6 @@ OMSI 2 installation is changed.
   description in your language, and a **3D showroom drawn by openOMSI's own renderer** (outside, passenger and driver views).
   Trailers, traffic copies and non-buses are left out.
 - **openOMSI's own pages, one by one.** *Options* offers Settings, Controls, Setup, Add-ons, Timetable, Mods, Running games, Multiplayer and  Depot; each opens that page of openOMSI's launcher alone, in a window of its own (it needs a version of openOMSI that takes  `--page` and `--no-sidebar`).
-- **openOMSI updates.** Stable or beta channel, any version to choose from, SHA-256 check, a trial run of the new program before it
-  replaces anything, and a rollback if something fails.
 - **Starts in a normal window**, F11 for full screen. **Windows of their own.** Dialogs and pickers are real windows: they can be moved anywhere, never cut off by the launcher.
 - Three themes (OMSI 2 orange, dark, light) and nine languages: English, Spanish, German, Polish, Czech, French, Portuguese, Hungarian and Serbian. The main
   screens and settings are translated in all of them; the texts in all languages except English and Spanish have not been reviewed by native speakers, so corrections are welcome.

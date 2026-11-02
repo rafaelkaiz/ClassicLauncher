@@ -19,7 +19,6 @@ mod icons;
 mod log;
 mod logo;
 mod olf;
-mod omsi_updates;
 mod omsi;
 mod paper;
 mod pick;
@@ -150,8 +149,6 @@ struct App {
     staff_pos: Option<egui::Pos2>,
     /// Whether the window is full screen now (the setting is what it is at the next start).
     full_now: bool,
-    install_seen: bool,
-    upd: omsi_updates::Upd,
     /// The version of the game program (`Release 0.3.46` on the main screen), read in the background.
     game_version: std::sync::Arc<std::sync::Mutex<Option<String>>>,
     version_for: Option<PathBuf>,
@@ -298,8 +295,6 @@ impl App {
             host_rect: egui::Rect::NOTHING,
             staff_pos: None,
             full_now: false,
-            install_seen: false,
-            upd: Default::default(),
             game_version: Default::default(),
             version_for: None,
         };
@@ -347,9 +342,6 @@ impl App {
             "settings" => {
                 app.settings_open = true;
                 app.settings_tab = std::env::var("CL_TAB").ok().and_then(|t| t.parse().ok()).unwrap_or(0);
-                if std::env::var_os("CL_CHECK").is_some() {
-                    omsi_updates::start(&app.upd.rel, || {});
-                }
             }
             _ => {}
         }
@@ -1359,8 +1351,6 @@ impl App {
         let mut open = self.settings_open;
         let mut changed = false;
         let mut open_url: Option<String> = None;
-        let mut omsi_page: Option<String> = None;
-        let omsi_installed = self.game_version.lock().ok().and_then(|v| v.clone());
         let mut message: Option<String> = None;
         // one rounded card per topic, each with its title
         let card = |ui: &mut egui::Ui, title: &str, show: bool, add: &mut dyn FnMut(&mut egui::Ui)| {
@@ -1548,17 +1538,10 @@ impl App {
                         }
                     });
                     ui.label(RichText::new(trf("Versions are published at github.com/{}. The launcher only tells you: it downloads and changes nothing by itself.", &[update::REPO])).italics().size(12.0));
-                    ui.separator();
-                    if self.upd.card(ui, &mut self.prefs.omsi_beta, omsi_installed.clone(), &mut omsi_page) {
-                        changed = true;
-                    }
                 });
             });
         });
         self.settings_open = open;
-        if let Some(p) = omsi_page {
-            omsi::open_folder(std::path::Path::new(&p));
-        }
         if let Some(u) = open_url {
             omsi::open_folder(std::path::Path::new(&u));
         }
@@ -1630,15 +1613,6 @@ impl eframe::App for App {
             return;
         }
         self.poll_launch(&ctx);
-        // a finished installation: the version is read again from the new program
-        if matches!(*self.upd.install.lock().unwrap(), omsi_updates::Install::Done(_)) {
-            if !self.install_seen {
-                self.install_seen = true;
-                self.version_for = None;
-            }
-        } else {
-            self.install_seen = false;
-        }
         if self.version_for != self.game {
             self.version_for = self.game.clone();
             if let Ok(mut v) = self.game_version.lock() {
@@ -1662,8 +1636,6 @@ impl eframe::App for App {
         self.settings_window(&ctx);
         self.driver_window(&ctx);
         self.confirm_window(&ctx);
-        let installed = self.game_version.lock().ok().and_then(|v| v.clone());
-        self.upd.windows(&ctx, installed, self.game.as_deref());
         self.tutorials_window(&ctx);
         self.staff_window(&ctx);
         self.pages_window(&ctx);

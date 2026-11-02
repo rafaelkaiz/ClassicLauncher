@@ -28,8 +28,6 @@ ventana, y no se cambia nada de tu instalación de OMSI 2.
   flota, la descripción del autobús en tu idioma y una **exposición 3D dibujada por el propio motor de openOMSI** (vistas exterior,
   pasajeros y conductor). Se dejan fuera remolques, copias del tráfico y lo que no es un autobús.
 - **Las páginas de openOMSI, una a una.** *Opciones* ofrece Ajustes, Controles, Preparación, Complementos, Horario, Mods, Partidas en marcha,  Multijugador y Cochera; cada una abre esa página del launcher de openOMSI sola, en una ventana propia (hace falta una versión de  openOMSI que acepte `--page` y `--no-sidebar`).
-- **Actualizaciones de openOMSI.** Canal estable o beta, cualquier versión a elegir, comprobación SHA-256, prueba del programa nuevo
-  antes de sustituir nada y vuelta atrás si algo falla.
 - **Arranca en ventana normal**, F11 para pantalla completa. **Ventanas propias.** Los diálogos y selectores son ventanas de verdad: se mueven a donde quieras y el launcher nunca las corta.
 - Tres temas (naranja de OMSI 2, oscuro, claro) y nueve idiomas: español, inglés, alemán, polaco, checo, francés, portugués, húngaro y serbio. Las pantallas
   y los ajustes están traducidos en todos; los textos de todos los idiomas salvo el español y el inglés no los ha revisado ningún hablante nativo, así que se agradecen correcciones.

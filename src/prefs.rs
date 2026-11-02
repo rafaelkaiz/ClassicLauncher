@@ -21,8 +21,6 @@ pub struct Prefs {
     pub schedule: bool,
     /// Show the command the game will be started with, above the buttons.
     pub show_command: bool,
-    /// openOMSI updates: the beta channel.
-    pub omsi_beta: bool,
     /// Write the launcher's look (light or dark) to openOMSI's `ui_theme`, which its own launcher and the game's interface follow.
     pub sync_theme: bool,
 }
@@ -42,7 +40,6 @@ impl Default for Prefs {
             passengers: true,
             schedule: true,
             show_command: false,
-            omsi_beta: false,
             sync_theme: true,
         }
     }
@@ -92,7 +89,6 @@ impl Prefs {
                 "passengers" => s.passengers = v != "0",
                 "schedule" => s.schedule = v != "0",
                 "show_command" => s.show_command = v == "1",
-                "omsi_beta" => s.omsi_beta = v == "1",
                 "sync_theme" => s.sync_theme = v != "0",
                 _ => {}
             }
@@ -107,7 +103,7 @@ impl Prefs {
         }
         let path_text = |p: &Option<PathBuf>| p.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
         let text = format!(
-            "theme={}\nlanguage={}\nomsi_dir={}\ngame={}\nclose_on_start={}\nfullscreen={}\nmap={}\ndriver={}\ntraffic={}\npassengers={}\nschedule={}\nshow_command={}\nomsi_beta={}\nsync_theme={}\n",
+            "theme={}\nlanguage={}\nomsi_dir={}\ngame={}\nclose_on_start={}\nfullscreen={}\nmap={}\ndriver={}\ntraffic={}\npassengers={}\nschedule={}\nshow_command={}\nsync_theme={}\n",
             self.theme.key(),
             self.lang.code(),
             path_text(&self.omsi_dir),
@@ -120,7 +116,6 @@ impl Prefs {
             u8::from(self.passengers),
             u8::from(self.schedule),
             u8::from(self.show_command),
-            u8::from(self.omsi_beta),
             u8::from(self.sync_theme),
         );
         std::fs::write(path, text).map_err(|e| trf("Could not save the settings: {}", &[&e.to_string()]))
