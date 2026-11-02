@@ -27,14 +27,7 @@ ventana, y no se cambia nada de tu instalación de OMSI 2.
 - **Elegir autobús como en OMSI 2.** Marca, modelo y repintado salen del `[friendlyname]` de cada autobús, con matrícula y número de
   flota, la descripción del autobús en tu idioma y una **exposición 3D dibujada por el propio motor de openOMSI** (vistas exterior,
   pasajeros y conductor). Se dejan fuera remolques, copias del tráfico y lo que no es un autobús.
-- **Todos los ajustes de openOMSI**, en las mismas pestañas que la página del juego, guardados al instante (preajustes de gráficos,
-  perfiles, la prueba «optimizar para mi PC», emisoras de radio, ...).
-- **Controles.** Teclas con filtro, captura de tecla y avisos de conflicto; mandos (volantes, pedales, gamepads) leídos con
-  DirectInput como hace el juego, con barras de ejes en vivo, configuración paso a paso, botones por acción o por botón (pulsa para
-  detectar), zona muerta, fuerza de pedales, ajuste de la respuesta de fuerza y **prueba del sentido de la fuerza**.
-- **Listas de IA.** Los grupos de tráfico del mapa con sus pesos, los tipos de autobús de la cochera con números de flota,
-  matrículas y repintados, y los tipos de autobús de cada línea.
-- **Solución de problemas.** La prueba de modelos del propio juego (`--check`) sobre cualquier autobús, mapa, archivo o carpeta.
+- **Las páginas de openOMSI, una a una.** *Opciones* ofrece Ajustes, Controles, Preparación, Complementos, Horario, Mods, Partidas en marcha,  Multijugador y Cochera; cada una abre esa página del launcher de openOMSI sola, en una ventana propia (hace falta una versión de  openOMSI que acepte `--page` y `--no-sidebar`).
 - **Actualizaciones de openOMSI.** Canal estable o beta, cualquier versión a elegir, comprobación SHA-256, prueba del programa nuevo
   antes de sustituir nada y vuelta atrás si algo falla.
 - **Arranca en ventana normal**, F11 para pantalla completa. **Ventanas propias.** Los diálogos y selectores son ventanas de verdad: se mueven a donde quieras y el launcher nunca las corta.

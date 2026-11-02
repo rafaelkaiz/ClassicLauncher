@@ -12,6 +12,10 @@ pub enum Icon {
     Bus,
     People,
     Fleet,
+    Wheel,
+    Gear,
+    Cube,
+    Puzzle,
 }
 
 /// Draws `icon` centred on `c`, fitting in a square of side `2 * r`.
@@ -65,6 +69,44 @@ pub fn paint(p: &Painter, icon: Icon, c: Pos2, r: f32, color: Color32) {
             }
         }
         // Tutorial IV: several buses
+        // controls: a steering wheel
+        Icon::Wheel => {
+            p.circle_stroke(c, r * 0.9, stroke);
+            p.circle_filled(c, r * 0.2, color);
+            line(pos2(c.x - r * 0.9, c.y), pos2(c.x - r * 0.2, c.y));
+            line(pos2(c.x + r * 0.2, c.y), pos2(c.x + r * 0.9, c.y));
+            line(pos2(c.x, c.y + r * 0.2), pos2(c.x, c.y + r * 0.9));
+        }
+        // setup: a gear
+        Icon::Gear => {
+            p.circle_stroke(c, r * 0.55, stroke);
+            p.circle_stroke(c, r * 0.2, stroke);
+            for k in 0..8 {
+                let a = k as f32 * std::f32::consts::TAU / 8.0;
+                let d = pos2(a.cos(), a.sin());
+                line(pos2(c.x + d.x * r * 0.55, c.y + d.y * r * 0.55), pos2(c.x + d.x * r * 0.9, c.y + d.y * r * 0.9));
+            }
+        }
+        // add-ons: a box
+        Icon::Cube => {
+            let pts = [pos2(c.x, c.y - r * 0.9), pos2(c.x + r * 0.8, c.y - r * 0.45), pos2(c.x + r * 0.8, c.y + r * 0.45), pos2(c.x, c.y + r * 0.9), pos2(c.x - r * 0.8, c.y + r * 0.45), pos2(c.x - r * 0.8, c.y - r * 0.45)];
+            for i in 0..6 {
+                line(pts[i], pts[(i + 1) % 6]);
+            }
+            line(c, pts[1]);
+            line(c, pts[5]);
+            line(c, pts[3]);
+        }
+        // mods: a puzzle piece
+        Icon::Puzzle => {
+            let (l, rt, t, b) = (c.x - r * 0.6, c.x + r * 0.6, c.y - r * 0.5, c.y + r * 0.7);
+            line(pos2(l, t), pos2(rt, t));
+            line(pos2(l, b), pos2(rt, b));
+            line(pos2(l, t), pos2(l, b));
+            line(pos2(rt, t), pos2(rt, b));
+            p.circle_filled(pos2(c.x, t - r * 0.22), r * 0.26, color);
+            p.circle_filled(pos2(rt + r * 0.22, c.y + r * 0.1), r * 0.26, color);
+        }
         Icon::Fleet => {
             bus(p, pos2(c.x - r * 0.35, c.y - r * 0.35), r * 0.62, color, stroke);
             bus(p, pos2(c.x + r * 0.4, c.y + r * 0.4), r * 0.62, color, stroke);

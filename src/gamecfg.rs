@@ -43,16 +43,6 @@ impl GameCfg {
         }
     }
 
-    /// Takes the key out, so the game uses its default again.
-    pub fn remove(&mut self, key: &str) {
-        self.lines.retain(|l| !l.split_once('=').is_some_and(|(k, _)| k.trim() == key));
-    }
-
-    /// Takes every setting out: the game uses its defaults again.
-    pub fn clear(&mut self) {
-        self.lines.clear();
-    }
-
     pub fn flag(&self, key: &str, def: bool) -> bool {
         match self.get(key).as_deref() {
             Some("1") | Some("true") | Some("on") => true,
@@ -88,8 +78,7 @@ mod tests {
         let mut c = GameCfg::parse("x".into(), "# comment\nversion=4\nmsaa=4\nunknown_key=7\nvsync=1\n");
         c.set("msaa", "8");
         c.set("clouds", "0");
-        c.remove("vsync");
-        assert_eq!(c.text(), "# comment\nversion=4\nmsaa=8\nunknown_key=7\nclouds=0\n");
+        assert_eq!(c.text(), "# comment\nversion=4\nmsaa=8\nunknown_key=7\nvsync=1\nclouds=0\n");
         assert!(!c.flag("clouds", true) && c.flag("missing", true));
     }
 }

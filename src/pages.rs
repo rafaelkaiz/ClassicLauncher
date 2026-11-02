@@ -2,19 +2,20 @@
 //! `--page <id> --no-sidebar`; a version without those arguments would open on its first page instead, so the program is asked
 //! only when it has them (their name is in it as text).
 
+use crate::icons::Icon;
 use std::path::{Path, PathBuf};
 
 /// (the page's name in the game's launcher, the text shown here), in the order they are offered.
-pub const PAGES: [(&str, &str); 9] = [
-    ("settings", "Settings"),
-    ("controls", "Controls"),
-    ("setup", "Setup"),
-    ("addons", "Add-ons"),
-    ("timetable", "Timetable"),
-    ("mods", "Mods"),
-    ("games", "Running games"),
-    ("multiplayer", "Multiplayer"),
-    ("depot", "Depot"),
+pub const PAGES: [(&str, &str, crate::icons::Icon); 9] = [
+    ("settings", "Settings", Icon::Sliders),
+    ("controls", "Controls", Icon::Wheel),
+    ("setup", "Setup", Icon::Gear),
+    ("addons", "Add-ons", Icon::Cube),
+    ("timetable", "Timetable", Icon::Clock),
+    ("mods", "Mods", Icon::Puzzle),
+    ("games", "Running games", Icon::Play),
+    ("multiplayer", "Multiplayer", Icon::People),
+    ("depot", "Depot", Icon::Fleet),
 ];
 
 fn program(game: &Path) -> Option<PathBuf> {

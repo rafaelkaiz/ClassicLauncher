@@ -161,7 +161,7 @@ pub fn show(ctx: &egui::Context, p: &mut BusPrompt) -> Outcome {
                             r.on_hover_text(&b.file);
                             if clicked && !on {
                                 p.choice = BusChoice { file: b.file.clone(), ..Default::default() };
-                                p.paints = crate::ailists::paints(&p.omsi, p.content.as_deref(), &b.file);
+                                p.paints = crate::paints::paints(&p.omsi, p.content.as_deref(), &b.file);
                                 p.default_paint = b.paint.trim().to_string();
                                 p.description = crate::buses::description_in(&p.omsi, p.content.as_deref(), &b.file, crate::olf::omsi_code(crate::i18n::lang()), &b.description);
                                 p.reading = false;

@@ -1,23 +1,15 @@
 #![windows_subsystem = "windows"]
 //! ClassicLauncher: a fast launcher for openOMSI, laid out like the OMSI 2 Launcher (and OMSI 2's own start screen). It picks the
-//! map, vehicle, start place, driver, date and time and starts `openomsi.exe` with them; its options window edits openOMSI's own
-//! settings.
+//! map, vehicle, start place, driver, date and time and starts `openomsi.exe` with them; it opens the pages of openOMSI's own
+//! pages.
 
-mod ailists;
-mod ailists_ui;
+mod paints;
 mod app_icon;
 mod chrono;
 mod bus_prompt;
 mod showroom;
 mod buses;
 mod free;
-mod controllers;
-mod controllers_ui;
-mod dinput;
-mod ffb_calibration;
-mod keybindings;
-mod keys_ui;
-mod troubleshoot_ui;
 mod driver_files;
 mod drivers;
 mod game;
@@ -29,14 +21,9 @@ mod logo;
 mod olf;
 mod omsi_updates;
 mod omsi;
-mod options_extra;
-mod options_ui;
-mod radio;
 mod paper;
 mod pick;
 mod prefs;
-mod presets;
-mod schema;
 mod situations;
 mod texts;
 mod texts_more;
@@ -131,13 +118,13 @@ struct App {
     date_touched: bool,
     time_dialog: Option<TimeDialog>,
     bus_prompt: Option<bus_prompt::BusPrompt>,
-    options_open: bool,
     /// The window that offers the pages of openOMSI's own launcher, and whether the installed one can open them one by one.
     pages_open: bool,
     pages_supported: bool,
-    options: options_ui::State,
     settings_open: bool,
     settings_tab: usize,
+    /// The game's settings file as last read, with when (`cfg_flag`).
+    game_cfg: std::cell::RefCell<(std::time::Instant, Option<gamecfg::GameCfg>)>,
     update: update::Shared,
     status: String,
     locate_dir: String,
@@ -184,6 +171,18 @@ fn big_icon_button(ui: &mut egui::Ui, text: &str, width: f32, icon: icons::Icon)
     let r = big_button(ui, text, width);
     paint_icon(ui, &r, icon, pal().light);
     r
+}
+
+/// A page of openOMSI's launcher as a tile: its icon above its name; the tile fills with the launcher's dark colour under the mouse.
+fn page_tile(ui: &mut egui::Ui, text: &str, icon: icons::Icon, size: egui::Vec2) -> egui::Response {
+    let (rect, r) = ui.allocate_exact_size(size, egui::Sense::click());
+    let p = pal();
+    let (fill, ink) = if r.hovered() { (p.dark, p.light) } else { (p.field, p.dark) };
+    let painter = ui.painter();
+    painter.rect(rect, 8.0, fill, egui::Stroke::new(1.0, p.border), egui::StrokeKind::Inside);
+    icons::paint(painter, icon, egui::pos2(rect.center().x, rect.top() + size.y * 0.36), 15.0, ink);
+    painter.text(egui::pos2(rect.center().x, rect.top() + size.y * 0.74), egui::Align2::CENTER_CENTER, text, egui::FontId::proportional(17.0), if r.hovered() { p.light } else { p.text });
+    r.on_hover_cursor(egui::CursorIcon::PointingHand)
 }
 
 /// A block of the start screen: content followed by a thick orange rule, like OMSI's own panels.
@@ -272,12 +271,11 @@ impl App {
             date_touched: false,
             time_dialog: None,
             bus_prompt: None,
-            options_open: false,
             pages_open: false,
             pages_supported: false,
-            options: options_ui::State::new(),
             settings_open: false,
             settings_tab: 0,
+            game_cfg: std::cell::RefCell::new((std::time::Instant::now(), None)),
             update: Default::default(),
             status: tr("Ready.").to_string(),
             locate_dir: String::new(),
@@ -317,13 +315,6 @@ impl App {
         let Some(what) = self.preview.take() else { return };
         let app = self;
         match what.as_str() {
-            "options" => {
-                if std::env::var_os("CL_CHECK").is_some() {
-                    omsi_updates::start(&app.upd.rel, || {});
-                }
-                app.options_open = true;
-                app.options.tab = std::env::var("CL_TAB").ok().and_then(|t| t.parse().ok()).unwrap_or(0);
-            }
             "situation" => {
                 app.mode = StartMode::Situation;
                 let want = std::env::var("CL_MAP").unwrap_or_else(|_| "Berlin-Spandau".into());
@@ -397,11 +388,20 @@ impl App {
         };
     }
 
+    /// One of the game's settings as a switch, from `settings.cfg` (read again every few seconds, not on every frame).
+    fn cfg_flag(&self, key: &str) -> bool {
+        let mut cache = self.game_cfg.borrow_mut();
+        if cache.0.elapsed() > std::time::Duration::from_secs(3) || cache.1.is_none() {
+            *cache = (std::time::Instant::now(), gamecfg::GameCfg::load());
+        }
+        cache.1.as_ref().is_some_and(|c| c.flag(key, false))
+    }
+
     /// The time and date to pass: the chosen ones, else the game's own - or today's when the game's settings ask for the real time or date.
     fn time_strings(&self) -> (Option<String>, Option<String>) {
         match self.time_mode {
             TimeMode::Game => {
-                let flag = |k: &str| self.options.cfg.as_ref().is_some_and(|c| c.flag(k, false));
+                let flag = |k: &str| self.cfg_flag(k);
                 let (y, mo, d, h, mi, _) = omsi::local_now();
                 (flag("use_real_time").then(|| format!("{h:02}:{mi:02}")), flag("use_real_date").then(|| format!("{y:04}-{mo:02}-{d:02}")))
             }
@@ -427,7 +427,7 @@ impl App {
                 Start::Free { place: chosen.map(|p| p.index), view: chosen.and_then(|p| p.view) }
             }
         };
-        let no_plugins = self.options.cfg.as_ref().is_some_and(|c| c.flag("disable_plugins", false));
+        let no_plugins = self.cfg_flag("disable_plugins");
         Some(Plan {
             omsi,
             map,
@@ -1048,22 +1048,23 @@ impl App {
         }
     }
 
-    /// "Options": which page of openOMSI's launcher to open (each one alone, in its own window), or this launcher's own options.
+    /// "Options": which page of openOMSI's launcher to open, each one alone in its own window.
     fn pages_window(&mut self, ctx: &egui::Context) {
         if !self.pages_open {
             return;
         }
         let mut go: Option<&'static str> = None;
-        let mut own = false;
         let mut message: Option<String> = None;
         let supported = self.pages_supported;
-        let open = free::window(ctx, "pages", tr("Options"), egui::vec2(560.0, 300.0), |ui| {
-            ui.spacing_mut().item_spacing = egui::vec2(10.0, 10.0);
+        let open = free::window(ctx, "pages", tr("Options"), egui::vec2(590.0, 330.0), |ui| {
+            ui.spacing_mut().item_spacing = egui::vec2(12.0, 12.0);
+            ui.label(RichText::new("openOMSI").strong().size(22.0).color(pal().dark));
             if supported {
-                ui.label(RichText::new(tr("Choose what to open from openOMSI's launcher.")).italics().size(12.0));
-                egui::Grid::new("pages-grid").num_columns(3).spacing([10.0, 10.0]).show(ui, |ui| {
-                    for (i, (id, label)) in pages::PAGES.iter().enumerate() {
-                        if big_button(ui, tr(label), 190.0).clicked() {
+                ui.label(RichText::new(tr("Choose what to open from openOMSI's launcher.")).italics().size(13.0));
+                ui.add_space(2.0);
+                egui::Grid::new("pages-grid").num_columns(3).spacing([12.0, 12.0]).show(ui, |ui| {
+                    for (i, (id, label, icon)) in pages::PAGES.iter().enumerate() {
+                        if page_tile(ui, tr(label), *icon, egui::vec2(180.0, 92.0)).clicked() {
                             go = Some(id);
                         }
                         if i % 3 == 2 {
@@ -1073,11 +1074,7 @@ impl App {
                 });
             } else {
                 ui.set_max_width(520.0);
-                ui.label(RichText::new(tr("This version of openOMSI cannot open the pages of its launcher one by one; a newer one can.")).italics().size(12.0));
-            }
-            ui.separator();
-            if ui.button(tr("This launcher's own options (AI lists, updates...)")).clicked() {
-                own = true;
+                ui.label(RichText::new(tr("This version of openOMSI cannot open the pages of its launcher one by one; a newer one can.")).italics().size(13.0));
             }
         });
         if let (Some(id), Some(game)) = (go, self.game.clone()) {
@@ -1087,11 +1084,6 @@ impl App {
             self.pages_open = false;
         } else {
             self.pages_open = open;
-        }
-        if own {
-            self.options = options_ui::State::new();
-            self.options_open = true;
-            self.pages_open = false;
         }
         if let Some(m) = message {
             self.status = m;
@@ -1367,6 +1359,8 @@ impl App {
         let mut open = self.settings_open;
         let mut changed = false;
         let mut open_url: Option<String> = None;
+        let mut omsi_page: Option<String> = None;
+        let omsi_installed = self.game_version.lock().ok().and_then(|v| v.clone());
         let mut message: Option<String> = None;
         // one rounded card per topic, each with its title
         let card = |ui: &mut egui::Ui, title: &str, show: bool, add: &mut dyn FnMut(&mut egui::Ui)| {
@@ -1554,10 +1548,17 @@ impl App {
                         }
                     });
                     ui.label(RichText::new(trf("Versions are published at github.com/{}. The launcher only tells you: it downloads and changes nothing by itself.", &[update::REPO])).italics().size(12.0));
+                    ui.separator();
+                    if self.upd.card(ui, &mut self.prefs.omsi_beta, omsi_installed.clone(), &mut omsi_page) {
+                        changed = true;
+                    }
                 });
             });
         });
         self.settings_open = open;
+        if let Some(p) = omsi_page {
+            omsi::open_folder(std::path::Path::new(&p));
+        }
         if let Some(u) = open_url {
             omsi::open_folder(std::path::Path::new(&u));
         }
@@ -1666,28 +1667,6 @@ impl eframe::App for App {
         self.tutorials_window(&ctx);
         self.staff_window(&ctx);
         self.pages_window(&ctx);
-        if self.options_open {
-            let mut open = true;
-            // a window of its own size that can be moved and stretched; it opens a bit smaller than the launcher's 1080 x 780 area
-            let size = egui::vec2(1000.0_f32.min(ctx.content_rect().width() - 80.0), 664.0_f32.min(ctx.content_rect().height() - 100.0));
-            let installed = self.game_version.lock().ok().and_then(|v| v.clone());
-            let mut page: Option<String> = None;
-            open = crate::free::window(&ctx, "options", tr("openOMSI settings"), egui::vec2(size[0], size[1]), |ui| {
-                // (the content sets the window's size, so the title bar is as wide as the window; `fixed_size` left it a few pixels short)
-                ui.set_width(size[0] - 14.0);
-                ui.set_height(size[1] - 48.0);
-                let (upd, prefs) = (&mut self.upd, &mut self.prefs);
-                options_ui::show(ui, &mut self.options, self.omsi.as_deref(), self.game.as_deref(), &mut |ui| {
-                    if upd.card(ui, &mut prefs.omsi_beta, installed.clone(), &mut page) {
-                        let _ = prefs.save();
-                    }
-                });
-            });
-            if let Some(p) = page {
-                omsi::open_folder(std::path::Path::new(&p));
-            }
-            self.options_open = open;
-        }
     }
 }
 

@@ -26,14 +26,7 @@ OMSI 2 installation is changed.
 - **Choose a bus like in OMSI 2.** Brand, model and repaint from each bus's `[friendlyname]`, plate and fleet number, the bus's
   description in your language, and a **3D showroom drawn by openOMSI's own renderer** (outside, passenger and driver views).
   Trailers, traffic copies and non-buses are left out.
-- **All of openOMSI's settings**, in the same tabs as the game's page, saved at once (graphics presets, profiles, the
-  "optimise for my PC" run, radio stations, ...).
-- **Controls.** Keyboard bindings with filter, key capture and conflict warnings; game controllers (wheels, pedals, gamepads) read
-  through DirectInput like the game, with live axis bars, step-by-step setup, buttons by action or by button (press to detect),
-  dead zone, pedal strength, force feedback tuning and a **force feedback direction test**.
-- **AI lists.** The map's traffic groups with their weights, the depot's bus types with fleet numbers, plates and repaints, and
-  the bus types of each line.
-- **Troubleshooting.** The game's own model test (`--check`) on any bus, map, file or folder.
+- **openOMSI's own pages, one by one.** *Options* offers Settings, Controls, Setup, Add-ons, Timetable, Mods, Running games, Multiplayer and  Depot; each opens that page of openOMSI's launcher alone, in a window of its own (it needs a version of openOMSI that takes  `--page` and `--no-sidebar`).
 - **openOMSI updates.** Stable or beta channel, any version to choose from, SHA-256 check, a trial run of the new program before it
   replaces anything, and a rollback if something fails.
 - **Starts in a normal window**, F11 for full screen. **Windows of their own.** Dialogs and pickers are real windows: they can be moved anywhere, never cut off by the launcher.

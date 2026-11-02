@@ -13,15 +13,6 @@ pub fn init(omsi: &Path) {
     let _ = OMSI_LANGS.set(crate::i18n::omsi_languages(omsi));
 }
 
-/// The languages OMSI has, as the code pairs a drop-down list needs (the options window's language box).
-pub fn option_choices() -> &'static [(&'static str, &'static str)] {
-    static C: OnceLock<Vec<(&'static str, &'static str)>> = OnceLock::new();
-    C.get_or_init(|| match OMSI_LANGS.get() {
-        Some(l) if !l.is_empty() => l.iter().map(|l| (l.code(), l.code())).collect(),
-        _ => vec![("DEU", "DEU"), ("ENG", "ENG"), ("ESP", "ESP"), ("FRA", "FRA"), ("HUN", "HUN"), ("POL", "POL"), ("SRB", "SRB")],
-    })
-}
-
 /// OMSI's language code for a launcher language: its own when OMSI has texts in it, English otherwise (OMSI has no Czech or
 /// Portuguese, for instance).
 pub fn omsi_code(l: Lang) -> &'static str {
@@ -102,22 +93,6 @@ pub fn load(omsi: &Path, lang: Lang) -> HashMap<String, String> {
     let code = omsi_code(lang);
     if code != "ENG" {
         load_into(&mut map, &dir, code);
-    }
-    map
-}
-
-/// The names OMSI gives the keys (`Inputs\<CODE>.kyb`, lines of `scan<TAB>name`), by scan code; English where the language has none.
-pub fn key_names(omsi: &Path, lang: Lang) -> HashMap<i32, String> {
-    let mut map = HashMap::new();
-    for code in ["ENG", omsi_code(lang)] {
-        let Ok(bytes) = std::fs::read(omsi.join("Inputs").join(format!("{code}.kyb"))) else { continue };
-        for line in decode(&bytes).lines() {
-            if let Some((k, v)) = line.split_once('\t') {
-                if let Ok(scan) = k.trim().parse::<i32>() {
-                    map.insert(scan, v.trim_end_matches('\r').to_string());
-                }
-            }
-        }
     }
     map
 }

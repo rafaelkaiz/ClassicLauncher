@@ -404,15 +404,6 @@ pub fn restore_own_window() {
     }
 }
 
-/// The refresh rate of the main screen in hertz.
-pub fn refresh_hz() -> Option<u32> {
-    use windows_sys::Win32::Graphics::Gdi::{DEVMODEW, ENUM_CURRENT_SETTINGS, EnumDisplaySettingsW};
-    let mut dm: DEVMODEW = unsafe { std::mem::zeroed() };
-    dm.dmSize = std::mem::size_of::<DEVMODEW>() as u16;
-    let ok = unsafe { EnumDisplaySettingsW(std::ptr::null(), ENUM_CURRENT_SETTINGS, &mut dm) } != 0;
-    (ok && dm.dmDisplayFrequency > 1).then_some(dm.dmDisplayFrequency)
-}
-
 /// The folder the game keeps its own files in (its copies of the drivers, the maps' last states, the AI lists you edit): the folder
 /// of the program, or an `openOMSI` folder in it when the program sits in OMSI 2's own folder.
 pub fn content_dir(game: &Path) -> Option<PathBuf> {

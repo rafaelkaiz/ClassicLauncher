@@ -317,6 +317,7 @@ mod hs_tests {
 
     #[test]
     fn hungarian_and_serbian_translate() {
+        let _g = crate::i18n::LANG_TESTS.lock().unwrap_or_else(|e| e.into_inner());
         set_lang(Lang::Hu);
         assert_eq!(tr("Choose a bus"), "Válassz buszt");
         set_lang(Lang::Sr);
@@ -345,6 +346,7 @@ mod more_tests {
 
     #[test]
     fn the_other_built_in_languages_translate_and_fall_back_to_english() {
+        let _g = crate::i18n::LANG_TESTS.lock().unwrap_or_else(|e| e.into_inner());
         set_lang(Lang::De);
         assert_eq!(tr("Choose a bus"), "Bus auswählen");
         assert_eq!(tr("Check now"), "Jetzt prüfen");
@@ -363,3 +365,7 @@ mod more_tests {
         }
     }
 }
+
+/// The language is one global: the tests that change it take turns.
+#[cfg(test)]
+pub static LANG_TESTS: std::sync::Mutex<()> = std::sync::Mutex::new(());
