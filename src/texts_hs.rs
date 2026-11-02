@@ -117,7 +117,7 @@ pub const HS: &[(&str, [&str; 2])] = &[
     ("Multiplayer", ["Többjátékos", "Više igrača"]),
     ("Depot", ["Telephely", "Garaža"]),
     ("Choose what to open from openOMSI's launcher.", ["Válaszd ki, mit nyisson meg az openOMSI launcheréből.", "Izaberite šta da se otvori iz launchera openOMSI-ja."]),
-    ("This version of openOMSI cannot open the pages of its launcher one by one; a newer one can.", ["Az openOMSI ezen verziója nem tudja egyenként megnyitni a launcherének oldalait; egy újabb igen.", "Ova verzija openOMSI-ja ne može pojedinačno da otvara stranice svog launchera; novija može."]),
+    ("The options need openOMSI 0.3.47 or later.", ["A beállításokhoz openOMSI 0.3.47 vagy újabb szükséges.", "Opcije zahtevaju openOMSI 0.3.47 ili noviji."]),
     ("Use this look for openOMSI's own launcher and the game too", ["Ez a megjelenés az openOMSI saját launcherében és a játékban is", "Koristi ovaj izgled i za sopstveni launcher openOMSI-ja i za igru"]),
     ("Light and the ClassicLauncher orange are the light look of openOMSI, Dark is its dark one; it is written to its settings.", ["A világos és a ClassicLauncher narancs az openOMSI világos megjelenése, a sötét a sötét; az openOMSI beállításaiba íródik.", "Svetla i narandžasta ClassicLauncher su svetli izgled openOMSI-ja, Tamna je tamni; upisuje se u njegova podešavanja."]),
     ("Model", ["Modell", "Model"]),

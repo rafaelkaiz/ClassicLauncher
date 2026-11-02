@@ -45,7 +45,7 @@ pub const ES2: &[(&str, &str)] = &[
     ("Multiplayer", "Multijugador"),
     ("Depot", "Cochera"),
     ("Choose what to open from openOMSI's launcher.", "Elige qué abrir del launcher de openOMSI."),
-    ("This version of openOMSI cannot open the pages of its launcher one by one; a newer one can.", "Esta versión de openOMSI no puede abrir una a una las páginas de su launcher; una más nueva sí."),
+    ("The options need openOMSI 0.3.47 or later.", "Las opciones requieren openOMSI 0.3.47 o posterior."),
     ("Use this look for openOMSI's own launcher and the game too", "Usar este aspecto también en el launcher propio de openOMSI y en el juego"),
     ("Light and the ClassicLauncher orange are the light look of openOMSI, Dark is its dark one; it is written to its settings.", "Claro y el naranja de ClassicLauncher son el aspecto claro de openOMSI, Oscuro es el oscuro; se escribe en sus ajustes."),
     ("No preview of this bus", "Sin vista previa de este autobús"),

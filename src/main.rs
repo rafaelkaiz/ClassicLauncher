@@ -1066,7 +1066,7 @@ impl App {
                 });
             } else {
                 ui.set_max_width(520.0);
-                ui.label(RichText::new(tr("This version of openOMSI cannot open the pages of its launcher one by one; a newer one can.")).italics().size(13.0));
+                ui.label(RichText::new(tr("The options need openOMSI 0.3.47 or later.")).italics().size(13.0));
             }
         });
         if let (Some(id), Some(game)) = (go, self.game.clone()) {

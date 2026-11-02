@@ -26,7 +26,7 @@ OMSI 2 installation is changed.
 - **Choose a bus like in OMSI 2.** Brand, model and repaint from each bus's `[friendlyname]`, plate and fleet number, the bus's
   description in your language, and a **3D showroom drawn by openOMSI's own renderer** (outside, passenger and driver views).
   Trailers, traffic copies and non-buses are left out.
-- **openOMSI's own pages, one by one.** *Options* offers Settings, Controls, Setup, Add-ons, Timetable, Mods, Running games, Multiplayer and  Depot; each opens that page of openOMSI's launcher alone, in a window of its own (it needs a version of openOMSI that takes  `--page` and `--no-sidebar`).
+- **openOMSI's own pages, one by one.** *Options* offers Settings, Controls, Setup, Add-ons, Timetable, Mods, Running games, Multiplayer and  Depot; each opens that page of openOMSI's launcher alone, in a window of its own (it needs openOMSI 0.3.47 or later, which takes `--page` and `--no-sidebar`).
 - **Starts in a normal window**, F11 for full screen. **Windows of their own.** Dialogs and pickers are real windows: they can be moved anywhere, never cut off by the launcher.
 - Three themes (OMSI 2 orange, dark, light) and nine languages: English, Spanish, German, Polish, Czech, French, Portuguese, Hungarian and Serbian. The main
   screens and settings are translated in all of them; the texts in all languages except English and Spanish have not been reviewed by native speakers, so corrections are welcome.
