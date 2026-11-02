@@ -41,6 +41,7 @@ mod situations;
 mod texts;
 mod texts_more;
 mod texts_hs;
+mod pages;
 mod texts_es;
 mod texts_es2;
 mod theme;
@@ -131,6 +132,9 @@ struct App {
     time_dialog: Option<TimeDialog>,
     bus_prompt: Option<bus_prompt::BusPrompt>,
     options_open: bool,
+    /// The window that offers the pages of openOMSI's own launcher, and whether the installed one can open them one by one.
+    pages_open: bool,
+    pages_supported: bool,
     options: options_ui::State,
     settings_open: bool,
     settings_tab: usize,
@@ -269,6 +273,8 @@ impl App {
             time_dialog: None,
             bus_prompt: None,
             options_open: false,
+            pages_open: false,
+            pages_supported: false,
             options: options_ui::State::new(),
             settings_open: false,
             settings_tab: 0,
@@ -324,6 +330,10 @@ impl App {
                 if let Some(m) = app.maps.iter().position(|m| m.folder == want) {
                     app.map = m;
                 }
+            }
+            "pages" => {
+                app.pages_open = true;
+                app.pages_supported = app.game.as_deref().is_some_and(pages::supported);
             }
             "staff" => {
                 app.staff_open = true;
@@ -799,8 +809,8 @@ impl App {
                     }
                 }
                 if big_icon_button(ui, tr("Options"), w, icons::Icon::Sliders).clicked() {
-                    self.options = options_ui::State::new();
-                    self.options_open = !self.options_open;
+                    self.pages_supported = self.game.as_deref().is_some_and(pages::supported);
+                    self.pages_open = !self.pages_open;
                 }
                 if big_icon_button(ui, tr("Close"), w, icons::Icon::Close).clicked() {
                     ctx.send_viewport_cmd(egui::ViewportCommand::Close);
@@ -1035,6 +1045,56 @@ impl App {
             if let Some(o) = self.omsi.clone() {
                 self.start(ctx, game::tutorial_args(&o, n));
             }
+        }
+    }
+
+    /// "Options": which page of openOMSI's launcher to open (each one alone, in its own window), or this launcher's own options.
+    fn pages_window(&mut self, ctx: &egui::Context) {
+        if !self.pages_open {
+            return;
+        }
+        let mut go: Option<&'static str> = None;
+        let mut own = false;
+        let mut message: Option<String> = None;
+        let supported = self.pages_supported;
+        let open = free::window(ctx, "pages", tr("Options"), egui::vec2(560.0, 300.0), |ui| {
+            ui.spacing_mut().item_spacing = egui::vec2(10.0, 10.0);
+            if supported {
+                ui.label(RichText::new(tr("Choose what to open from openOMSI's launcher.")).italics().size(12.0));
+                egui::Grid::new("pages-grid").num_columns(3).spacing([10.0, 10.0]).show(ui, |ui| {
+                    for (i, (id, label)) in pages::PAGES.iter().enumerate() {
+                        if big_button(ui, tr(label), 190.0).clicked() {
+                            go = Some(id);
+                        }
+                        if i % 3 == 2 {
+                            ui.end_row();
+                        }
+                    }
+                });
+            } else {
+                ui.set_max_width(520.0);
+                ui.label(RichText::new(tr("This version of openOMSI cannot open the pages of its launcher one by one; a newer one can.")).italics().size(12.0));
+            }
+            ui.separator();
+            if ui.button(tr("This launcher's own options (AI lists, updates...)")).clicked() {
+                own = true;
+            }
+        });
+        if let (Some(id), Some(game)) = (go, self.game.clone()) {
+            if let Err(e) = pages::open(&game, id) {
+                message = Some(e);
+            }
+            self.pages_open = false;
+        } else {
+            self.pages_open = open;
+        }
+        if own {
+            self.options = options_ui::State::new();
+            self.options_open = true;
+            self.pages_open = false;
+        }
+        if let Some(m) = message {
+            self.status = m;
         }
     }
 
@@ -1605,6 +1665,7 @@ impl eframe::App for App {
         self.upd.windows(&ctx, installed, self.game.as_deref());
         self.tutorials_window(&ctx);
         self.staff_window(&ctx);
+        self.pages_window(&ctx);
         if self.options_open {
             let mut open = true;
             // a window of its own size that can be moved and stretched; it opens a bit smaller than the launcher's 1080 x 780 area
